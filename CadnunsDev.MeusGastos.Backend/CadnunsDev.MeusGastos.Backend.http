@@ -1,0 +1,6 @@
+@CadnunsDev.MeusGastos.Backend_HostAddress = http://localhost:5159
+
+GET {{CadnunsDev.MeusGastos.Backend_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###

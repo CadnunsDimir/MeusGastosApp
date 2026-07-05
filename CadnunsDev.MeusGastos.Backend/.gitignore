@@ -1,0 +1,76 @@
+# Build Folders
+bin/
+obj/
+
+# Visual Studio
+.vs/
+*.user
+*.suo
+*.userosscache
+*.sln.docstates
+
+# Rider
+.idea/
+*.sln.iml
+
+# Visual Studio Code
+.vscode/
+
+# ASP.NET Scaffolding
+ScaffoldingReadMe.txt
+
+# NuGet
+*.nupkg
+packages/
+# The packages folder can be ignored because of Package Restore
+**/[Pp]ackages/*
+
+# OS Files
+.DS_Store
+Thumbs.db
+
+# Rider project files
+*.sln.DotSettings
+
+# User-specific files
+*.DotSettings.user
+
+# Build results
+*.log
+
+# IIS Express
+/.vs/
+
+# JetBrains Rider
+.idea/
+
+# Resharper
+_ReSharper*/
+*.ReSharper
+*.DotSettings.user
+
+# Backup & report files
+*.dump
+*.cache
+*.pid
+
+# ASP.NET temporary files
+appsettings.Development.json
+
+# Rider
+.idea/
+
+# Azure DevOps
+$tf/
+
+# Local history
+.vs/
+
+# Entity Framework
+*.dbmdl
+
+# Others
+*.publishsettings
+
+# Rider caches
+*/.idea/*
