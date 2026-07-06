@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 using CadnunsDev.MeusGastos.Backend.Domain.Entities;
 using CadnunsDev.MeusGastos.Backend.Domain.Exceptions;
 using CadnunsDev.MeusGastos.Backend.Models;
-using CadnunsDev.MeusGastos.Backend.Repositories;
+using CadnunsDev.MeusGastos.Backend.Domain.Repositories;
 
 namespace CadnunsDev.MeusGastos.Backend.Domain.Services
 {
@@ -23,6 +23,7 @@ namespace CadnunsDev.MeusGastos.Backend.Domain.Services
         internal async Task<BankAccountDTO> CreateNewAsync(string userName, NewBankAccountDTO newBankAccountDTO)
         {
             var user = await userRepository.GetByUserName(userName) ?? throw new InvalidUserException();
+            //TODO: verifique se já não existe uma conta com esse nome para esse usuário
             var account = new BankAccount
             {
               Name = newBankAccountDTO.AccountName,

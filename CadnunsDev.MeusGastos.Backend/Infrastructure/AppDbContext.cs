@@ -77,16 +77,24 @@ public class AppDbContext : DbContext
         {
             entity.HasKey(e => e.CategoryId);
             entity.Property(e => e.Description).IsRequired();
+            entity.Property(e => e.UserId).IsRequired();
+            entity.HasOne<User>()
+                .WithMany()
+                .HasForeignKey(e => e.UserId)
+                .OnDelete(DeleteBehavior.Cascade);
         });
 
         modelBuilder.Entity<BillToPay>(entity =>
         {
             entity.HasKey(e => e.BillId);
             entity.Property(e => e.BillDescription).IsRequired();
+            entity.Property(e => e.Month).IsRequired();
+            entity.Property(e => e.Year).IsRequired();
             entity.Property(e => e.Value).HasColumnType("decimal(18,2)");
             entity.HasOne(b => b.Category)
                   .WithMany()
                   .HasForeignKey("CategoryId")
+                  .IsRequired()
                   .OnDelete(DeleteBehavior.Restrict);
         });
     }

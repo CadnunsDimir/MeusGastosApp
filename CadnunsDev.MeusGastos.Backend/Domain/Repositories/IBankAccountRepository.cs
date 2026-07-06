@@ -4,7 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using CadnunsDev.MeusGastos.Backend.Domain.Entities;
 
-namespace CadnunsDev.MeusGastos.Backend.Repositories
+namespace CadnunsDev.MeusGastos.Backend.Domain.Repositories
 {
     public interface IBankAccountRepository: ICreateRepository<BankAccount>
     {

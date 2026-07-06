@@ -1,6 +1,6 @@
 using CadnunsDev.MeusGastos.Backend.Domain.Exceptions;
 using CadnunsDev.MeusGastos.Backend.Models;
-using CadnunsDev.MeusGastos.Backend.Repositories;
+using CadnunsDev.MeusGastos.Backend.Domain.Repositories;
 
 namespace CadnunsDev.MeusGastos.Backend.Domain.Services
 {

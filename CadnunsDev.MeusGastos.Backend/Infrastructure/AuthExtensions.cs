@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Security.Claims;
 using System.Text;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
@@ -34,6 +35,11 @@ namespace CadnunsDev.MeusGastos.Backend.Infrastructure
         {
             app.UseAuthentication();
             app.UseAuthorization();
+        }
+
+        public static string GetUserName(this ClaimsPrincipal user)
+        {
+            return user.FindFirstValue("UserName") ?? throw new NullReferenceException("UserName não presente no JWT");
         }
     }
 }

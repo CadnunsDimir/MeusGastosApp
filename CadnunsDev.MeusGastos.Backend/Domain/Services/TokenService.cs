@@ -3,7 +3,7 @@ using System.Security.Claims;
 using System.Security.Cryptography;
 using System.Text;
 using CadnunsDev.MeusGastos.Backend.Domain.Entities;
-using CadnunsDev.MeusGastos.Backend.Repositories;
+using CadnunsDev.MeusGastos.Backend.Domain.Repositories;
 using Microsoft.IdentityModel.Tokens;
 
 namespace CadnunsDev.MeusGastos.Backend.Domain.Services

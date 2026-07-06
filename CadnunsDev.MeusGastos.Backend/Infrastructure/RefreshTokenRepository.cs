@@ -1,5 +1,5 @@
 using CadnunsDev.MeusGastos.Backend.Domain.Entities;
-using CadnunsDev.MeusGastos.Backend.Repositories;
+using CadnunsDev.MeusGastos.Backend.Domain.Repositories;
 using Microsoft.EntityFrameworkCore;
 
 namespace CadnunsDev.MeusGastos.Backend.Infrastructure;
