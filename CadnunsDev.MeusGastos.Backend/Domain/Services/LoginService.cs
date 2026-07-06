@@ -60,8 +60,13 @@ namespace CadnunsDev.MeusGastos.Backend.Domain.Services
             return new LoginResponseDTO
             {
                 AcessToken = newAccessToken,
-                RefreshToken = refreshToken
+                RefreshToken = newRefreshToken
             };
+        }
+
+        public async Task Logout(RefreshRequestDTO request)
+        {
+            await tokenService.RevokeRefreshTokenAsync(request.RefreshToken);
         }
     }
 }

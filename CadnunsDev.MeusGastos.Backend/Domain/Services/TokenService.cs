@@ -17,8 +17,8 @@ namespace CadnunsDev.MeusGastos.Backend.Domain.Services
 
         public TokenService(IConfiguration configuration, IRefreshTokenRepository refreshTokenRepository, IUserRepository userRepository)
         {
-            PasswordHashSecret = configuration["PasswordHashSecret"] ?? throw new NullReferenceException();
-            TokenSecret = configuration["TokenSecret"] ?? throw new NullReferenceException();
+            PasswordHashSecret = configuration[Constants.PasswordHashSecret] ?? throw new NullReferenceException();
+            TokenSecret = configuration[Constants.TokenSecret] ?? throw new NullReferenceException();
             this.refreshTokenRepository = refreshTokenRepository;
             this.userRepository = userRepository;
         }
@@ -151,6 +151,19 @@ namespace CadnunsDev.MeusGastos.Backend.Domain.Services
             };
 
             await refreshTokenRepository.CreateAsync(newTokenEntity);
+        }
+
+        internal async Task RevokeRefreshTokenAsync(string refreshToken)
+        {
+            if (string.IsNullOrWhiteSpace(refreshToken))
+                return;
+
+            var tokenHash = HashRefreshToken(refreshToken);
+            var refreshTokenEntity = await refreshTokenRepository.GetByTokenHashAsync(tokenHash);
+            if (refreshTokenEntity is null || refreshTokenEntity.Revoked)
+                return;
+
+            await refreshTokenRepository.RevokeAsync(refreshTokenEntity.TokenId);
         }
     }
 }
