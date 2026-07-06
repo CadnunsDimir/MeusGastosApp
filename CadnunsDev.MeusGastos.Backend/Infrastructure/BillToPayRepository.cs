@@ -23,6 +23,16 @@ public class BillToPayRepository : IBillToPayRepository
         await context.SaveChangesAsync();
     }
 
+    public async Task DeleteAsync(Guid userId, Guid billId)
+    {
+        var entity = await context.BillsToPay.FirstOrDefaultAsync(x=> x.BillId == billId && x.Category.UserId == userId);
+        if (entity != null)
+        {
+            context.Remove(entity);
+            await context.SaveChangesAsync();
+        }
+    }
+
     public Task<List<BillToPay>> ListAsync(Guid userId, int year, int month)
     {
         return context.BillsToPay

@@ -8,6 +8,7 @@ namespace CadnunsDev.MeusGastos.Backend.Domain.Repositories
 {
     public interface IBillToPayRepository : ICreateRepository<BillToPay>
     {
+        Task DeleteAsync(Guid userId, Guid billId);
         Task<List<BillToPay>> ListAsync(Guid userId, int year, int month);
         Task<bool> NotExistsThisBill(int year, int month, string description);
         Task SaveAllAsync(List<BillToPay> biils);

@@ -143,5 +143,13 @@ namespace CadnunsDev.MeusGastos.Backend.Domain.Services
             logger.LogDebug("ListAsync response data: {@BillResponseList}", result);
             return result;
         }
+
+        internal async Task DeleteBillAsync(string userName, Guid billId)
+        {
+            var user = await userRepository.GetByUserName(userName) ?? throw new InvalidUserException();
+            logger.LogDebug("Found user with userName={UserName} and userId={UserId}", userName, user.UserId);
+
+            await billsRepository.DeleteAsync(user.UserId, billId);
+        }
     }
 }

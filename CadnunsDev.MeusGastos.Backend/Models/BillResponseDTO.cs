@@ -9,9 +9,11 @@ namespace CadnunsDev.MeusGastos.Backend.Models
         public int PaymentDay { get; private set; }
         public bool IsPaid { get; private set; }
         public string? Category { get; private set; }
+        public Guid BillId { get; private set; }
 
         internal static BillResponseDTO Map(BillToPay bill) => new()
         {
+            BillId = bill.BillId,
             BillDescription = bill.BillDescription,
             Value = bill.Value,
             PaymentDay = bill.PaymentDay,
