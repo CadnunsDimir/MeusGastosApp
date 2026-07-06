@@ -7,6 +7,7 @@ using CadnunsDev.MeusGastos.Backend.Repositories;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
+using System.Security.Claims;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -14,6 +15,7 @@ builder.Services.AddOpenApi();
 builder.Services.AddScoped<NewUserService>();
 builder.Services.AddScoped<LoginService>();
 builder.Services.AddScoped<TokenService>();
+builder.Services.AddScoped<BankAccountService>();
 
 var tokenSecret = Encoding.ASCII.GetBytes(builder.Configuration[Constants.TokenSecret]?? throw new NullReferenceException(Constants.TokenSecret));
 
@@ -85,5 +87,17 @@ app.MapPost("/auth/login", (LoginRequestDTO loginRequest, LoginService service) 
 app.MapPost("/auth/refresh", (RefreshRequestDTO request, LoginService service) => service.RefreshToken(request));
 app.MapPost("/auth/logout", (RefreshRequestDTO request, LoginService service) => service.Logout(request)).RequireAuthorization();
 app.MapGet("/profile", () => "Profile" ).RequireAuthorization();
+
+var bankAcountGroup = app.MapGroup("/bank/account");
+bankAcountGroup.MapGet("/", (ClaimsPrincipal user, BankAccountService bankAccountService) =>
+    {
+        var userName = user.FindFirstValue("UserName") ?? throw new NullReferenceException("UserName não presente no JWT");
+        return bankAccountService.ListByUserNameAsync(userName);
+    });
+bankAcountGroup.MapPost("/", (NewBankAccountDTO newBankAccountDTO, ClaimsPrincipal user, BankAccountService bankAccountService) =>
+    {
+        var userName = user.FindFirstValue("UserName") ?? throw new NullReferenceException("UserName não presente no JWT");
+        return bankAccountService.CreateNewAsync(userName, newBankAccountDTO);
+    });
 
 app.Run();

@@ -13,7 +13,7 @@ public class UserRepository : IUserRepository
         this.context = context;
     }
 
-    public async Task Create(User user)
+    public async Task CreateAsync(User user)
     {
         context.Users.Add(user);
         await context.SaveChangesAsync();

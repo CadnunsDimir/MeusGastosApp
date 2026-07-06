@@ -1,0 +1,45 @@
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
+using CadnunsDev.MeusGastos.Backend.Domain.Entities;
+using CadnunsDev.MeusGastos.Backend.Domain.Exceptions;
+using CadnunsDev.MeusGastos.Backend.Models;
+using CadnunsDev.MeusGastos.Backend.Repositories;
+
+namespace CadnunsDev.MeusGastos.Backend.Domain.Services
+{
+    public class BankAccountService
+    {
+        private readonly IUserRepository userRepository;
+        private readonly IBankAccountRepository bankAccountRepository;
+
+        public BankAccountService(IUserRepository userRepository, IBankAccountRepository bankAccountRepository)
+        {
+            this.userRepository = userRepository;
+            this.bankAccountRepository = bankAccountRepository;
+        }
+
+        internal async Task<BankAccountDTO> CreateNewAsync(string userName, NewBankAccountDTO newBankAccountDTO)
+        {
+            var user = await userRepository.GetByUserName(userName) ?? throw new InvalidUserException();
+            var account = new BankAccount
+            {
+              Name = newBankAccountDTO.AccountName,
+              InitialBalance = newBankAccountDTO.InitialBalance,
+              Balance = newBankAccountDTO.InitialBalance,
+              UserId = user.UserId,
+              AccountId = Guid.NewGuid()
+            };
+            await bankAccountRepository.CreateAsync(account);
+            return BankAccountDTO.Map(account);
+        }
+
+        internal async Task<List<BankAccountDTO>> ListByUserNameAsync(string userName)
+        {
+            var user = await userRepository.GetByUserName(userName) ?? throw new InvalidUserException();
+            var accounts = await bankAccountRepository.GetByUserId(user.UserId);
+            return BankAccountDTO.MapList(accounts);
+        }
+    }
+}

@@ -63,7 +63,7 @@ namespace CadnunsDev.MeusGastos.Backend.Domain.Services
         private static Claim[] GetClaims(User user)
         {
             var list = new List<Claim>(){
-                new (ClaimTypes.Name, user.UserName),
+                new ("UserName", user.UserName),
                 new (ClaimTypes.Email, user.Email ?? string.Empty),
             };
 

@@ -20,7 +20,7 @@ namespace CadnunsDev.MeusGastos.Backend.Domain.Services
             if (await repository.UserNameIsAvailable(newAccount.UserName))
             {
                 var user = newAccount.CreateUserEntity(tokenService.GeneratePasswordHash(newAccount.Password));
-                await repository.Create(user);
+                await repository.CreateAsync(user);
                 return new NewUserDTO(user);
             }
             throw new UserNameAlreadyExistsException();
