@@ -1,35 +1,14 @@
-using System.Text;
-using CadnunsDev.MeusGastos.Backend;
 using CadnunsDev.MeusGastos.Backend.Domain.Services;
 using CadnunsDev.MeusGastos.Backend.Models;
 using CadnunsDev.MeusGastos.Backend.Infrastructure;
 using CadnunsDev.MeusGastos.Backend.Repositories;
-using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.IdentityModel.Tokens;
 using System.Security.Claims;
 
-
 var builder = WebApplication.CreateBuilder(args);
-var tokenSecret = Encoding.ASCII.GetBytes(builder.Configuration[Constants.TokenSecret]?? throw new NullReferenceException(Constants.TokenSecret));
 
 builder.Services.AddOpenApi();
-
-builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
-    .AddJwtBearer(x =>
-            {
-                x.RequireHttpsMetadata = false;
-                x.SaveToken = true;
-                x.TokenValidationParameters = new TokenValidationParameters
-                {
-                    ValidateIssuerSigningKey = true,
-                    IssuerSigningKey = new SymmetricSecurityKey(tokenSecret),
-                    ValidateIssuer = false,
-                    ValidateAudience = false
-                };
-            });
-
-builder.Services.AddAuthorization();
+builder.AddJwtAuthentication();
 builder.Services.AddDbContext<AppDbContext>(options =>
     options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection")));
 
@@ -50,38 +29,8 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
-app.UseAuthentication();
-app.UseAuthorization();
-
-// Apply EF Core migrations on startup when possible
-using (var scope = app.Services.CreateScope())
-{
-    var logger = scope.ServiceProvider.GetRequiredService<ILogger<Program>>();
-    var db = scope.ServiceProvider.GetRequiredService<AppDbContext>();
-
-    var attempts = 0;
-    var maxAttempts = 10;
-    var delay = TimeSpan.FromSeconds(5);
-    while (true)
-    {
-        try
-        {
-            db.Database.Migrate();
-            break;
-        }
-        catch (Exception ex)
-        {
-            attempts++;
-            logger.LogWarning(ex, "Database migration failed on attempt {Attempt}/{MaxAttempts}. Retrying in {Delay}.", attempts, maxAttempts, delay);
-            if (attempts >= maxAttempts)
-            {
-                logger.LogError(ex, "Failed to apply migrations after {MaxAttempts} attempts.", maxAttempts);
-                break;
-            }
-            await Task.Delay(delay);
-        }
-    }
-}
+app.UseJwtAuthentication();
+await app.ApplyDBMigrationsAsync();
 
 app.MapGet("/ok", () => "OK" );
 app.MapPost("/auth/newuser", (NewUserService service, NewUserRequestDTO newUserRequest) => service.Create(newUserRequest) );
