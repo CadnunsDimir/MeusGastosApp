@@ -29,7 +29,9 @@ namespace CadnunsDev.MeusGastos.Backend.Domain.Services
               InitialBalance = newBankAccountDTO.InitialBalance,
               Balance = newBankAccountDTO.InitialBalance,
               UserId = user.UserId,
-              AccountId = Guid.NewGuid()
+              AccountId = Guid.NewGuid(),
+              InitialMonth = DateTime.Now.Month,
+              InitialYear = DateTime.Now.Year
             };
             await bankAccountRepository.CreateAsync(account);
             return BankAccountDTO.Map(account);

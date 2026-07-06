@@ -9,15 +9,11 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using System.Security.Claims;
 
+
 var builder = WebApplication.CreateBuilder(args);
+var tokenSecret = Encoding.ASCII.GetBytes(builder.Configuration[Constants.TokenSecret]?? throw new NullReferenceException(Constants.TokenSecret));
 
 builder.Services.AddOpenApi();
-builder.Services.AddScoped<NewUserService>();
-builder.Services.AddScoped<LoginService>();
-builder.Services.AddScoped<TokenService>();
-builder.Services.AddScoped<BankAccountService>();
-
-var tokenSecret = Encoding.ASCII.GetBytes(builder.Configuration[Constants.TokenSecret]?? throw new NullReferenceException(Constants.TokenSecret));
 
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
     .AddJwtBearer(x =>
@@ -39,6 +35,12 @@ builder.Services.AddDbContext<AppDbContext>(options =>
 
 builder.Services.AddScoped<IUserRepository, UserRepository>();
 builder.Services.AddScoped<IRefreshTokenRepository, RefreshTokenRepository>();
+builder.Services.AddScoped<IBankAccountRepository, BankAccountRepository>();
+
+builder.Services.AddScoped<NewUserService>();
+builder.Services.AddScoped<LoginService>();
+builder.Services.AddScoped<TokenService>();
+builder.Services.AddScoped<BankAccountService>();
 
 var app = builder.Build();
 
@@ -88,7 +90,7 @@ app.MapPost("/auth/refresh", (RefreshRequestDTO request, LoginService service) =
 app.MapPost("/auth/logout", (RefreshRequestDTO request, LoginService service) => service.Logout(request)).RequireAuthorization();
 app.MapGet("/profile", () => "Profile" ).RequireAuthorization();
 
-var bankAcountGroup = app.MapGroup("/bank/account");
+var bankAcountGroup = app.MapGroup("/bank/account").RequireAuthorization();
 bankAcountGroup.MapGet("/", (ClaimsPrincipal user, BankAccountService bankAccountService) =>
     {
         var userName = user.FindFirstValue("UserName") ?? throw new NullReferenceException("UserName não presente no JWT");
