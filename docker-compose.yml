@@ -25,5 +25,13 @@ services:
       - "5000:80"
     restart: on-failure
 
+  frontend:
+    build:
+      context: ./CadnunsDev.MeusGastos.Frontend
+      dockerfile: Dockerfile
+    ports:
+      - "3000:80"
+    restart: on-failure
+
 volumes:
   pgdata:
