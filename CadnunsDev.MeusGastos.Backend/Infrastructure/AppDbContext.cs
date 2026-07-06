@@ -1,0 +1,87 @@
+using System;
+using System.Linq;
+using CadnunsDev.MeusGastos.Backend.Domain.Entities;
+using Microsoft.EntityFrameworkCore;
+
+namespace CadnunsDev.MeusGastos.Backend.Infrastructure;
+
+public class AppDbContext : DbContext
+{
+    public AppDbContext(DbContextOptions<AppDbContext> options) : base(options)
+    {
+    }
+
+    public DbSet<User> Users { get; set; } = null!;
+    public DbSet<RefreshToken> RefreshTokens { get; set; } = null!;
+    public DbSet<BankAccount> BankAccounts { get; set; } = null!;
+    public DbSet<BankAccountMovement> BankAccountMovements { get; set; } = null!;
+    public DbSet<BillCategory> BillCategories { get; set; } = null!;
+    public DbSet<BillToPay> BillsToPay { get; set; } = null!;
+
+    protected override void OnModelCreating(ModelBuilder modelBuilder)
+    {
+        base.OnModelCreating(modelBuilder);
+
+        modelBuilder.Entity<User>(entity =>
+        {
+            entity.HasKey(e => e.UserId);
+            entity.Property(e => e.UserName).IsRequired();
+            entity.Property(e => e.Email).IsRequired();
+            entity.Property(e => e.PasswordHash).IsRequired();
+            entity.Property(e => e.Roles).HasConversion(
+                v => string.Join(',', v),
+                v => v.Split(',', StringSplitOptions.RemoveEmptyEntries).ToArray()
+            );
+        });
+
+        modelBuilder.Entity<RefreshToken>(entity =>
+        {
+            entity.HasKey(e => e.TokenId);
+            entity.Property(e => e.TokenHash).IsRequired();
+            entity.HasOne<User>()
+                  .WithMany()
+                  .HasForeignKey(e => e.UserId)
+                  .OnDelete(DeleteBehavior.Cascade);
+        });
+
+        modelBuilder.Entity<BankAccount>(entity =>
+        {
+            entity.HasKey(e => e.AccountId);
+            entity.Property(e => e.Name).IsRequired();
+            entity.Property(e => e.InitialBalance).HasColumnType("decimal(18,2)");
+            entity.Property(e => e.Balance).HasColumnType("decimal(18,2)");
+            entity.HasOne<User>()
+                  .WithMany()
+                  .HasForeignKey(e => e.UserId)
+                  .OnDelete(DeleteBehavior.Cascade);
+        });
+
+        modelBuilder.Entity<BankAccountMovement>(entity =>
+        {
+            entity.HasKey(e => e.MovementId);
+            entity.Property(e => e.Description).IsRequired();
+            entity.Property(e => e.Value).HasColumnType("decimal(18,2)");
+            entity.HasOne<BankAccount>()
+                  .WithMany()
+                  .HasForeignKey(e => e.AccountId)
+                  .OnDelete(DeleteBehavior.Cascade);
+        });
+
+        modelBuilder.Entity<BillCategory>(entity =>
+        {
+            entity.HasKey(e => e.CategoryId);
+            entity.Property(e => e.Description).IsRequired();
+        });
+
+        modelBuilder.Entity<BillToPay>(entity =>
+        {
+            entity.HasKey(e => e.BillId);
+            entity.Property(e => e.BillDescription).IsRequired();
+            entity.Property(e => e.Value).HasColumnType("decimal(18,2)");
+            entity.HasOne(b => b.Category)
+                  .WithMany()
+                  .HasForeignKey("CategoryId")
+                  .OnDelete(DeleteBehavior.Restrict);
+        });
+    }
+}

@@ -2,7 +2,10 @@ using System.Text;
 using CadnunsDev.MeusGastos.Backend;
 using CadnunsDev.MeusGastos.Backend.Domain.Services;
 using CadnunsDev.MeusGastos.Backend.Models;
+using CadnunsDev.MeusGastos.Backend.Infrastructure;
+using CadnunsDev.MeusGastos.Backend.Repositories;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -29,6 +32,11 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
             });
 
 builder.Services.AddAuthorization();
+builder.Services.AddDbContext<AppDbContext>(options =>
+    options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection")));
+
+builder.Services.AddScoped<IUserRepository, UserRepository>();
+builder.Services.AddScoped<IRefreshTokenRepository, RefreshTokenRepository>();
 
 var app = builder.Build();
 
@@ -40,6 +48,22 @@ if (app.Environment.IsDevelopment())
 app.UseHttpsRedirection();
 app.UseAuthentication();
 app.UseAuthorization();
+
+// Apply EF Core migrations on startup when possible
+using (var scope = app.Services.CreateScope())
+{
+    try
+    {
+        var db = scope.ServiceProvider.GetRequiredService<AppDbContext>();
+        db.Database.Migrate();
+    }
+    catch (Exception ex)
+    {
+        // If migrations fail in some environments, fail fast in development only
+        var logger = scope.ServiceProvider.GetService<ILoggerFactory>()?.CreateLogger("StartupMigrations");
+        logger?.LogError(ex, "Failed to apply migrations at startup.");
+    }
+}
 
 app.MapGet("/ok", () => "OK" );
 app.MapPost("/auth/newuser", (NewUserService service, NewUserRequestDTO newUserRequest) => service.Create(newUserRequest) );
