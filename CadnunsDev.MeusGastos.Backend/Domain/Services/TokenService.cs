@@ -53,7 +53,7 @@ namespace CadnunsDev.MeusGastos.Backend.Domain.Services
             var tokenDescription = new SecurityTokenDescriptor
             {
                 Subject = new ClaimsIdentity(GetClaims(user)),
-                Expires = DateTime.UtcNow.AddHours(2),
+                Expires = DateTime.UtcNow.AddMinutes(5),
                 SigningCredentials = new SigningCredentials(new SymmetricSecurityKey(key), SecurityAlgorithms.HmacSha256Signature)
             };
             var token = tokenHandler.CreateToken(tokenDescription);

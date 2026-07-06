@@ -29,9 +29,13 @@ public class UserRepository : IUserRepository
         return await context.Users.FindAsync(userId);
     }
 
-    public async Task<bool> UserNameIsAvailable(object userName)
+    public Task<User?> GetByUserName(string userName)
     {
-        var name = userName?.ToString() ?? string.Empty;
-        return !await context.Users.AnyAsync(u => u.UserName == name);
+        return context.Users.FirstOrDefaultAsync(u => u.UserName == userName);
+    }
+
+    public async Task<bool> UserNameIsAvailable(string userName)
+    {
+        return !await context.Users.AnyAsync(u => u.UserName == userName);
     }
 }

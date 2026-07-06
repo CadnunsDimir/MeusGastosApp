@@ -2,6 +2,7 @@ using System;
 using System.Linq;
 using CadnunsDev.MeusGastos.Backend.Domain.Entities;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.ChangeTracking;
 
 namespace CadnunsDev.MeusGastos.Backend.Infrastructure;
 
@@ -26,12 +27,17 @@ public class AppDbContext : DbContext
         {
             entity.HasKey(e => e.UserId);
             entity.Property(e => e.UserName).IsRequired();
-            entity.Property(e => e.Email).IsRequired();
+            entity.Property(e => e.Email).IsRequired(false);
             entity.Property(e => e.PasswordHash).IsRequired();
             entity.Property(e => e.Roles).HasConversion(
                 v => string.Join(',', v),
                 v => v.Split(',', StringSplitOptions.RemoveEmptyEntries).ToArray()
-            );
+            )
+            .Metadata.SetValueComparer(
+                new ValueComparer<string[]>(
+                    (c1, c2) => c1.SequenceEqual(c2),
+                    c => c.Aggregate(0, (a, v) => HashCode.Combine(a, v.GetHashCode())),
+                    c => c.ToArray()));
         });
 
         modelBuilder.Entity<RefreshToken>(entity =>

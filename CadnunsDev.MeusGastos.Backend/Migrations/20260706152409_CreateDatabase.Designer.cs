@@ -12,8 +12,8 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace CadnunsDev.MeusGastos.Backend.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20260706113706_InitialCreate")]
-    partial class InitialCreate
+    [Migration("20260706152409_CreateDatabase")]
+    partial class CreateDatabase
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -163,7 +163,6 @@ namespace CadnunsDev.MeusGastos.Backend.Migrations
                         .HasColumnType("uuid");
 
                     b.Property<string>("Email")
-                        .IsRequired()
                         .HasColumnType("text");
 
                     b.Property<string>("FirstName")

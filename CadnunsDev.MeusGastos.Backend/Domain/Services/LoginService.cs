@@ -18,7 +18,7 @@ namespace CadnunsDev.MeusGastos.Backend.Domain.Services
         
         public async Task<LoginResponseDTO> Login(LoginRequestDTO loginRequest)
         {
-            var user = await GetUserIfPasswordIsValid(loginRequest.Email, loginRequest.Password);
+            var user = await GetUserIfPasswordIsValid(loginRequest.UserName, loginRequest.Password);
 
             if (user is not null)
             {
@@ -39,7 +39,7 @@ namespace CadnunsDev.MeusGastos.Backend.Domain.Services
 
         public async Task<User?> GetUserIfPasswordIsValid(string userName, string password)
         {
-            var user = await repository.GetByEmail(userName);
+            var user = await repository.GetByUserName(userName);
             var typedPasswordHash = tokenService.GeneratePasswordHash(password);
             return user?.PasswordHash == typedPasswordHash ? user : null;
         }

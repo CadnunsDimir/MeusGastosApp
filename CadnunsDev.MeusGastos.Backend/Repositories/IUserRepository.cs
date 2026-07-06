@@ -7,6 +7,7 @@ namespace CadnunsDev.MeusGastos.Backend.Repositories
         public Task Create(User user);
         Task<User> GetByEmail(string email);
         Task<User?> GetById(Guid userId);
-        Task<bool> UserNameIsAvailable(object userName);
+        Task<User?> GetByUserName(string userName);
+        Task<bool> UserNameIsAvailable(string userName);
     }
 }
