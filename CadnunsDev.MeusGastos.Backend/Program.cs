@@ -92,6 +92,6 @@ movementsGroup.MapGet("/", (int year, int month, ClaimsPrincipal user, BankAccou
 movementsGroup.MapPost("/", (int year, int month, NewAccountMovementDTO movement, ClaimsPrincipal user, BankAccountMovementService service) =>
     service.CreateNewAsync(user.GetUserName(), year, month, movement));
 movementsGroup.MapDelete("/{movementId}", (Guid movementId, ClaimsPrincipal user, BankAccountMovementService service) =>
-    service.DeleteBillAsync(user.GetUserName(), movementId));
+    service.DeleteAsync(user.GetUserName(), movementId));
 
 app.Run();

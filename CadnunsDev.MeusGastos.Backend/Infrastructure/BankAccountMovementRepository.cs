@@ -35,6 +35,21 @@ namespace CadnunsDev.MeusGastos.Backend.Infrastructure
             await context.SaveChangesAsync();
         }
 
+        public Task<BankAccountMovement?> FindByIdAndUserId(Guid userId, Guid movementId)
+        {
+            var query = (
+                from movements in context.BankAccountMovements
+                join accounts in context.BankAccounts
+                on movements.AccountId equals accounts.AccountId
+                where movements.MovementId == movementId && accounts.UserId == userId
+                select movements
+            );
+
+            return query
+                .AsNoTracking()
+                .FirstOrDefaultAsync();
+        }
+
         public async Task<List<BankAccountMovement>> ListAsync(Guid userId, int year, int month)
         {
             var accountIds = await context.BankAccounts.Where(a => a.UserId == userId).Select(a => a.AccountId).ToListAsync();

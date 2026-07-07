@@ -10,5 +10,6 @@ namespace CadnunsDev.MeusGastos.Backend.Domain.Repositories
     {
         Task<List<BankAccount>> GetByUserId(Guid userId);
         Task DeleteAsync(Guid userId, Guid accountId);
+        Task Update(BankAccount account);
     }
 }

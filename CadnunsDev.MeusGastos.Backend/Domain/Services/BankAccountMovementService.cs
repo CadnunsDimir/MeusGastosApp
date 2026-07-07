@@ -47,8 +47,12 @@ namespace CadnunsDev.MeusGastos.Backend.Domain.Services
                     Value = movement.Value,
                     Date = movement.Date
                 };
-
                 await movementRepository.CreateAsync(entity);
+                
+                var account = accounts.First(x=>x.AccountId == entity.AccountId);
+                account.Balance += entity.Value;
+                logger.LogInformation("Update Account Balance on account {Name} from {UserName}", account.Name, userName);
+                await bankAccountRepository.Update(account);
 
                 created = AccountMovementDTO.Map(entity);
             });
@@ -56,23 +60,35 @@ namespace CadnunsDev.MeusGastos.Backend.Domain.Services
             return created;
         }
 
-        internal async Task DeleteBillAsync(string userName, Guid movementId)
+        internal async Task DeleteAsync(string userName, Guid movementId)
         {
-            logger.LogInformation("Delete movement {MovementId} requested by {UserName}", movementId, userName);
+            await unitOfWork.ExecuteAsync(async () =>
+            {
+                logger.LogInformation("Delete movement {MovementId} requested by {UserName}", movementId, userName);
 
-            var user = await userRepository.GetByUserName(userName) ?? throw new Exceptions.InvalidUserException();
+                var user = await userRepository.GetByUserName(userName) ?? throw new Exceptions.InvalidUserException();
+                var entity = await movementRepository.FindByIdAndUserId(user.UserId, movementId);
 
-            await movementRepository.DeleteAsync(user.UserId, movementId);
+                await movementRepository.DeleteAsync(user.UserId, movementId);
+
+                if (entity != null)
+                {
+                    var accounts = await bankAccountRepository.GetByUserId(user.UserId);
+                    var account = accounts.First(x => x.AccountId == entity.AccountId);
+                    account.Balance -= entity.Value;
+
+                    logger.LogInformation("Update Account Balance on account {Name} from {UserName}", account.Name, userName);
+                    await bankAccountRepository.Update(account);
+                }
+            });
+
         }
 
         internal async Task<List<AccountMovementDTO>> ListAsync(string userName, int year, int month)
         {
             logger.LogInformation("List movements for user={UserName}, year={Year}, month={Month}", userName, year, month);
-
             var user = await userRepository.GetByUserName(userName) ?? throw new Exceptions.InvalidUserException();
-
             var movements = await movementRepository.ListAsync(user.UserId, year, month);
-
             return movements.Select(AccountMovementDTO.Map).ToList();
         }
     }

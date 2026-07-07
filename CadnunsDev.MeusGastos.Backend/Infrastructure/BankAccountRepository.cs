@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using CadnunsDev.MeusGastos.Backend.Domain.Entities;
 using CadnunsDev.MeusGastos.Backend.Domain.Repositories;
+using CadnunsDev.MeusGastos.Backend.Models.Exceptions;
 using Microsoft.EntityFrameworkCore;
 
 namespace CadnunsDev.MeusGastos.Backend.Infrastructure
@@ -35,6 +36,17 @@ namespace CadnunsDev.MeusGastos.Backend.Infrastructure
         public Task<List<BankAccount>> GetByUserId(Guid userId)
         {
             return context.BankAccounts.Where(x=> x.UserId == userId).ToListAsync();
+        }
+
+        public async Task Update(BankAccount account)
+        {
+            var entity = await context.BankAccounts.FindAsync(account.AccountId);
+            if (entity == null)
+                throw new DbNotFoundException($"Conta com ID {account.AccountId} não encontrada.");
+
+            context.Entry(entity).CurrentValues.SetValues(account);
+            context.Entry(entity).Property(x => x.AccountId).IsModified = false;
+            await context.SaveChangesAsync();
         }
     }
 }
