@@ -44,5 +44,11 @@ namespace CadnunsDev.MeusGastos.Backend.Domain.Services
             var accounts = await bankAccountRepository.GetByUserId(user.UserId);
             return BankAccountDTO.MapList(accounts);
         }
+
+        internal async Task DeleteAsync(string userName, Guid accountId)
+        {
+            var user = await userRepository.GetByUserName(userName) ?? throw new InvalidUserException();
+            await bankAccountRepository.DeleteAsync(user.UserId, accountId);
+        }
     }
 }

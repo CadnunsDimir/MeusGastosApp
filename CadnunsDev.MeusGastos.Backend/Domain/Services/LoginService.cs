@@ -29,7 +29,7 @@ namespace CadnunsDev.MeusGastos.Backend.Domain.Services
 
                 return new LoginResponseDTO
                 {
-                    AcessToken = acessToken,
+                    AccessToken = acessToken,
                     RefreshToken = refreshToken
                 };
             }
@@ -59,7 +59,7 @@ namespace CadnunsDev.MeusGastos.Backend.Domain.Services
 
             return new LoginResponseDTO
             {
-                AcessToken = newAccessToken,
+                AccessToken = newAccessToken,
                 RefreshToken = newRefreshToken
             };
         }

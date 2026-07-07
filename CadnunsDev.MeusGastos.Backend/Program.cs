@@ -50,6 +50,8 @@ bankAcountGroup.MapGet("/", (ClaimsPrincipal user, BankAccountService bankAccoun
     bankAccountService.ListByUserNameAsync(user.GetUserName()));
 bankAcountGroup.MapPost("/", (NewBankAccountDTO newBankAccountDTO, ClaimsPrincipal user, BankAccountService bankAccountService) =>
     bankAccountService.CreateNewAsync(user.GetUserName(), newBankAccountDTO));
+bankAcountGroup.MapDelete("/{accountId}", (Guid accountId, ClaimsPrincipal user, BankAccountService bankAccountService) =>
+    bankAccountService.DeleteAsync(user.GetUserName(), accountId));
 
 var billsGroup = app.MapGroup("/bank/bills/{year}/{month}").RequireAuthorization();
 billsGroup.MapGet("/", (int year, int month, ClaimsPrincipal user, BillToPayService service) =>

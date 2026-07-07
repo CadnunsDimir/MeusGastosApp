@@ -9,5 +9,6 @@ namespace CadnunsDev.MeusGastos.Backend.Domain.Repositories
     public interface IBankAccountRepository: ICreateRepository<BankAccount>
     {
         Task<List<BankAccount>> GetByUserId(Guid userId);
+        Task DeleteAsync(Guid userId, Guid accountId);
     }
 }
