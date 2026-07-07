@@ -3,15 +3,13 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace CadnunsDev.MeusGastos.Backend.Domain.Entities
+namespace CadnunsDev.MeusGastos.Backend.Models
 {
-    public class BankAccountMovement
+    public class NewAccountMovementDTO
     {
-        public Guid MovementId { get; set; }
         public Guid AccountId { get; set; }
         public required string Description { get; set; }
         public decimal Value { get; set; }
         public DateOnly Date { get; set; }
-        
     }
 }

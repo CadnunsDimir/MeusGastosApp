@@ -8,6 +8,21 @@ using System.Security.Claims;
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddOpenApi();
+builder.Services.AddSwaggerGen(c =>
+{
+    c.SwaggerDoc("v1", new()
+    {
+        Title = "Meus Gastos API",
+        Version = "v1",
+        Description = "API do sistema Meus Gastos",
+        Contact = new()
+        {
+            Name = "Seu Nome",
+            Email = "seuemail@exemplo.com"
+        }
+    });
+});
+
 builder.AddJwtAuthentication();
 builder.Services.AddGlobalErrorHandling();
 builder.Services.AddDbContext<AppDbContext>(options =>
@@ -19,17 +34,27 @@ builder.Services.AddScoped<IRefreshTokenRepository, RefreshTokenRepository>();
 builder.Services.AddScoped<IBankAccountRepository, BankAccountRepository>();
 builder.Services.AddScoped<IBillCategoryRepository, BillCategoryRepository>();
 builder.Services.AddScoped<IBillToPayRepository, BillToPayRepository>();
+builder.Services.AddScoped<IBankAccountMovementRepository, BankAccountMovementRepository>();
 
 builder.Services.AddScoped<NewUserService>();
 builder.Services.AddScoped<LoginService>();
 builder.Services.AddScoped<TokenService>();
 builder.Services.AddScoped<BankAccountService>();
 builder.Services.AddScoped<BillToPayService>();
+builder.Services.AddScoped<BankAccountMovementService>();
 
 var app = builder.Build();
 
 if (app.Environment.IsDevelopment())
 {
+    app.UseSwagger();
+    app.UseSwaggerUI(c =>
+    {
+        c.SwaggerEndpoint("/swagger/v1/swagger.json", "Meus Gastos API v1");
+        c.RoutePrefix = "swagger";           // acessa em /swagger
+        c.DocumentTitle = "Meus Gastos - Swagger";
+    });
+
     app.MapOpenApi();
 }
 
@@ -60,5 +85,13 @@ billsGroup.MapPost("/", (int year, int month, NewBillDTO newBill, ClaimsPrincipa
     service.CreateNewAsync(user.GetUserName(), year, month, newBill));
 billsGroup.MapDelete("/{billId}", (Guid billId, ClaimsPrincipal user, BillToPayService service) =>
     service.DeleteBillAsync(user.GetUserName(), billId));
+
+var movementsGroup = app.MapGroup("/bank/movements/{year}/{month}").RequireAuthorization();
+movementsGroup.MapGet("/", (int year, int month, ClaimsPrincipal user, BankAccountMovementService service) =>
+    service.ListAsync(user.GetUserName(), year, month));
+movementsGroup.MapPost("/", (int year, int month, NewAccountMovementDTO movement, ClaimsPrincipal user, BankAccountMovementService service) =>
+    service.CreateNewAsync(user.GetUserName(), year, month, movement));
+movementsGroup.MapDelete("/{movementId}", (Guid movementId, ClaimsPrincipal user, BankAccountMovementService service) =>
+    service.DeleteBillAsync(user.GetUserName(), movementId));
 
 app.Run();

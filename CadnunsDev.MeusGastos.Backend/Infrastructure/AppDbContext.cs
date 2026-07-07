@@ -67,6 +67,7 @@ public class AppDbContext : DbContext
             entity.HasKey(e => e.MovementId);
             entity.Property(e => e.Description).IsRequired();
             entity.Property(e => e.Value).HasColumnType("decimal(18,2)");
+            entity.Property(e => e.Date).IsRequired();
             entity.HasOne<BankAccount>()
                   .WithMany()
                   .HasForeignKey(e => e.AccountId)
