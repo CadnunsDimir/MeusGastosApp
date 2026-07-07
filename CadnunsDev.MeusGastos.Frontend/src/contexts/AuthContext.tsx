@@ -9,13 +9,12 @@ interface AuthState {
 }
 
 interface LoginPayload {
-  email: string;
+  userName: string;
   password: string;
 }
 
 interface RegisterPayload {
-  name: string;
-  email: string;
+  userName: string;
   password: string;
 }
 
@@ -77,17 +76,17 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     };
   }, [state.refreshToken]);
 
-  const handleLogin = async ({ email, password }: LoginPayload) => {
-    const response = await api.post('/auth/login', { email, password });
+  const handleLogin = async ({ userName, password }: LoginPayload) => {
+    const response = await api.post('/auth/login', { userName, password });
     const { user, accessToken, refreshToken } = response.data;
     localStorage.setItem('accessToken', accessToken);
     localStorage.setItem('refreshToken', refreshToken);
     setState({ user, token: accessToken, refreshToken, isAuthenticated: true });
   };
 
-  const handleRegister = async ({ name, email, password }: RegisterPayload) => {
-    await api.post('/auth/newuser', { name, email, password });
-    await handleLogin({ email, password });
+  const handleRegister = async ({ userName, password }: RegisterPayload) => {
+    await api.post('/auth/newuser', { userName, password });
+    await handleLogin({ userName, password });
   };
 
   const handleLogout = () => {

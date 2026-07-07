@@ -4,7 +4,7 @@ import { useAuth } from '../contexts/AuthContext';
 import { Lock, Mail } from 'lucide-react';
 
 export function Login() {
-  const [email, setEmail] = useState('');
+  const [userName, setUserName] = useState('');
   const [password, setPassword] = useState('');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
@@ -17,10 +17,10 @@ export function Login() {
     setError('');
 
     try {
-      await login({ email, password });
+      await login({ userName, password });
       navigate('/');
     } catch (err) {
-      setError('Email ou senha inválidos.');
+      setError('Usuário ou senha inválidos.');
     } finally {
       setLoading(false);
     }
@@ -36,17 +36,16 @@ export function Login() {
 
       <form className="space-y-6" onSubmit={handleSubmit}>
         <div className="rounded-3xl border border-slate-200 bg-slate-50 p-4 shadow-sm dark:border-slate-700 dark:bg-slate-950">
-          <label className="mb-2 block text-sm font-medium text-slate-600 dark:text-slate-300" htmlFor="email">Email</label>
-          <div className="flex items-center gap-3 rounded-2xl border border-slate-200 bg-white px-4 py-3 shadow-sm dark:border-slate-800 dark:bg-slate-900">
-            <Mail className="h-5 w-5 text-slate-400" />
-            <input
-              id="email"
-              type="email"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              className="flex-1 bg-transparent text-sm text-slate-900 outline-none placeholder:text-slate-400 dark:text-slate-100"
-              placeholder="seu@email.com"
-              required
+        <label className="mb-2 block text-sm font-medium text-slate-600 dark:text-slate-300" htmlFor="userName">Usuário</label>
+        <div className="flex items-center gap-3 rounded-2xl border border-slate-200 bg-white px-4 py-3 shadow-sm dark:border-slate-800 dark:bg-slate-900">
+          <Mail className="h-5 w-5 text-slate-400" />
+          <input
+            id="userName"
+            type="text"
+            value={userName}
+            onChange={(e) => setUserName(e.target.value)}
+            className="flex-1 bg-transparent text-sm text-slate-900 outline-none placeholder:text-slate-400 dark:text-slate-100"
+            placeholder="nome de usuário"
             />
           </div>
         </div>
