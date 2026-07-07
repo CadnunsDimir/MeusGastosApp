@@ -5,6 +5,7 @@ import { format, addMonths, subMonths } from 'date-fns';
 import { useAuth } from '../contexts/AuthContext';
 import { listAccounts, listBills, listMovements } from '../services/finance';
 import type { BankAccountDTO, BillResponseDTO, MovementDTO } from '../types/finance';
+import { formatDateOnly } from '@/services/dates';
 
 export function Dashboard() {
   const [currentDate, setCurrentDate] = useState(new Date());
@@ -271,7 +272,7 @@ export function Dashboard() {
                       <tr key={movement.movementId} className="hover:bg-slate-50 dark:hover:bg-slate-900/80">
                         <td className="px-4 py-4 text-slate-900 dark:text-slate-100">{movement.description}</td>
                         <td className="px-4 py-4 text-slate-500 dark:text-slate-400">{movement.accountName}</td>
-                        <td className="px-4 py-4 text-slate-500 dark:text-slate-400">{format(new Date(movement.date), 'dd/MM/yyyy')}</td>
+                        <td className="px-4 py-4 text-slate-500 dark:text-slate-400">{formatDateOnly(movement.date)}</td>
                         <td className={`px-4 py-4 text-right font-semibold ${movement.value >= 0 ? 'text-emerald-600' : 'text-red-500'}`}>
                           R$ {Math.abs(movement.value).toFixed(2)}
                         </td>

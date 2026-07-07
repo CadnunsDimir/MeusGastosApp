@@ -37,6 +37,19 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     }));
     const [isInitialized, setIsInitialized] = useState(false);
 
+    async function refreshAccessToken(): Promise<string> {
+        const refreshToken = localStorage.getItem("refreshToken");
+
+        const { data } = await api.post("/auth/refresh", {
+            refreshToken,
+        });
+
+        localStorage.setItem("accessToken", data.accessToken);
+        localStorage.setItem("refreshToken", data.refreshToken);
+
+        return data.accessToken;
+    }
+
     useEffect(() => {
         const theme = localStorage.getItem('theme');
         document.documentElement.classList.toggle('dark', theme === 'dark');
@@ -55,6 +68,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     }, [state.token]);
 
     useEffect(() => {
+        let refreshPromise: Promise<string> | null = null;
+
         const interceptor = api.interceptors.response.use(
             (response) => {
                 console.log('✅ Requisição OK:', response.config.url);
@@ -65,33 +80,32 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
                 const originalRequest = error.config as any;
 
-                if (error.response?.status === 401) {
-                    console.log('🔄 Tentando refresh token...');
-                }
-
                 if (
-                    error.response?.status === 401 &&
-                    !originalRequest?._retry &&
-                    originalRequest?.url !== '/auth/refresh'
+                    error.response?.status !== 401 ||
+                    originalRequest._retry ||
+                    originalRequest.url === "/auth/refresh"
                 ) {
-                    originalRequest._retry = true;
-
-                    try {
-                        console.log('🔄 Chamando /auth/refresh');
-                        const refreshToken = localStorage.getItem('refreshToken');
-                        if (!refreshToken) throw new Error('No refresh token');
-
-                        const refreshResponse = await api.post('/auth/refresh', { refreshToken });
-                        console.log('✅ Refresh realizado com sucesso');
-
-                        // ... resto do código igual
-                    } catch (refreshError) {
-                        console.error('❌ Refresh falhou:', refreshError);
-                        logout();
-                    }
+                    return Promise.reject(error);
                 }
 
-                return Promise.reject(error);
+                console.log('🔄 Tentando refresh token...');
+
+                originalRequest._retry = true;
+
+                try {
+                    if (!refreshPromise) {
+                        refreshPromise = refreshAccessToken();
+                    }
+
+                    const accessToken = await refreshPromise;
+                    originalRequest.headers.Authorization = `Bearer ${accessToken}`;
+                    return api(originalRequest);
+                } catch (err) {
+                    logout();
+                    return Promise.reject(err);
+                } finally {
+                    refreshPromise = null;
+                }
             }
         );
 

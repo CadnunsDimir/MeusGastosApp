@@ -1,9 +1,10 @@
 import { useEffect, useState } from 'react';
 import { Plus, Pencil, Trash2 } from 'lucide-react';
 import { format } from 'date-fns';
-import { createMovement, listAccounts, listMovements } from '@/services/finance';
+import { createMovement, deleteMovement, listAccounts, listMovements } from '@/services/finance';
 import { BankAccountDTO, MovementDTO } from '@/types/finance';
 import { useAuth } from '@/contexts/AuthContext';
+import { formatDateOnly } from '@/services/dates';
 
 interface MovementMonth{
     month: number,
@@ -79,6 +80,17 @@ export function Movements() {
         }        
     };
 
+    const handleDelete = async (event: React.MouseEvent<HTMLButtonElement>, id?: string) =>{
+        try {
+            setLoading(true);
+            await deleteMovement(movementMonth.year, movementMonth.month, id ?? "");
+            setMovements((current) => current.filter(x=> x.movementId !== id));
+            setLoading(false);
+        } catch {
+            setError("Ocorreu um erro ao remover movimento")
+        }        
+    }
+
     return (
         <div className="mx-auto max-w-7xl px-4 py-6 sm:px-6 lg:px-8">
             <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
@@ -124,7 +136,7 @@ export function Movements() {
                                 movements.map((movement) => (
                                     <tr key={movement.movementId} className="hover:bg-slate-50 dark:hover:bg-slate-900/80">
                                         <td className="px-4 py-4 text-slate-900 dark:text-slate-100">{movement.description}</td>
-                                        <td className="px-4 py-4 text-slate-500 dark:text-slate-400">{format(new Date(movement.date), 'dd/MM/yyyy')}</td>
+                                        <td className="px-4 py-4 text-slate-500 dark:text-slate-400">{formatDateOnly(movement.date)}</td>
                                         <td className={`px-4 py-4 text-right font-semibold ${movement.value >= 0 ? 'text-emerald-600' : 'text-red-500'}`}>
                                             R$ {Math.abs(movement.value).toFixed(2)}
                                         </td>
@@ -132,7 +144,9 @@ export function Movements() {
                                             <button className="mr-3 inline-flex items-center gap-1 text-slate-600 hover:text-slate-900 dark:text-slate-300 dark:hover:text-slate-100">
                                                 <Pencil className="h-4 w-4" /> Editar
                                             </button>
-                                            <button className="inline-flex items-center gap-1 text-red-500 hover:text-red-600">
+                                            <button 
+                                                onClick={event => handleDelete(event, movement.movementId)}
+                                                className="inline-flex items-center gap-1 text-red-500 hover:text-red-600">
                                                 <Trash2 className="h-4 w-4" /> Excluir
                                             </button>
                                         </td>

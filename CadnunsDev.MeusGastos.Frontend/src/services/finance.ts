@@ -38,3 +38,7 @@ export async function createMovement(year: number, month: number, movement: Move
   const response = await api.post<MovementDTO>(`/bank/movements/${year}/${month}`, movement);
   return response.data;
 }
+
+export async function deleteMovement(year: number, month: number, movementId: string) {
+  await api.delete(`/bank/movements/${year}/${month}/${movementId}`);
+}
