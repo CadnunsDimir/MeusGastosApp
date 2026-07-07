@@ -18,6 +18,14 @@ export interface BillResponseDTO {
   category: string;
 }
 
+export interface MovementDTO {
+  movementId: string;
+  accountId: string;
+  description: string;
+  value: number;
+  date: string;
+}
+
 export interface NewBillDTO {
   description: string;
   category: string;

@@ -49,22 +49,28 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       (response) => response,
       async (error) => {
         const originalRequest = error.config as Record<string, any>;
+        const refreshToken = localStorage.getItem('refreshToken');
 
-        if (error.response?.status === 401 && state.refreshToken && !originalRequest?._retry) {
+        if (
+          error.response?.status === 401 &&
+          !originalRequest?._retry &&
+          originalRequest?.url !== '/auth/refresh' &&
+          refreshToken
+        ) {
           originalRequest._retry = true;
           try {
             const refreshResponse = await api.post('/auth/refresh', {
-              refreshToken: state.refreshToken
+              refreshToken
             });
 
-            const { accessToken, refreshToken } = refreshResponse.data;
+            const { accessToken, refreshToken: newRefreshToken } = refreshResponse.data;
             localStorage.setItem('accessToken', accessToken);
-            localStorage.setItem('refreshToken', refreshToken);
+            localStorage.setItem('refreshToken', newRefreshToken);
 
             setState((prev) => ({
               ...prev,
               token: accessToken,
-              refreshToken,
+              refreshToken: newRefreshToken,
               isAuthenticated: true
             }));
 

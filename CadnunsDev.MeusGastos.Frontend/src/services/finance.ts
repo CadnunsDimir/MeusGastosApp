@@ -1,5 +1,5 @@
 import { api } from './api';
-import type { BankAccountDTO, BillResponseDTO, NewBankAccountDTO, NewBillDTO } from '../types/finance';
+import type { BankAccountDTO, BillResponseDTO, MovementDTO, NewBankAccountDTO, NewBillDTO } from '../types/finance';
 
 export async function listAccounts() {
   const response = await api.get<BankAccountDTO[]>('/bank/account');
@@ -27,4 +27,9 @@ export async function createBill(year: number, month: number, payload: NewBillDT
 
 export async function deleteBill(year: number, month: number, billId: string) {
   await api.delete(`/bank/bills/${year}/${month}/${billId}`);
+}
+
+export async function listMovements(year: number, month: number) {
+  const response = await api.get<MovementDTO[]>(`/bank/movements/${year}/${month}`);
+  return response.data;
 }
