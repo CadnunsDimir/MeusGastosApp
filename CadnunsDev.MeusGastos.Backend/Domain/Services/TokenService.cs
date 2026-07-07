@@ -14,13 +14,15 @@ namespace CadnunsDev.MeusGastos.Backend.Domain.Services
         private readonly string TokenSecret;
         private readonly IRefreshTokenRepository refreshTokenRepository;
         private readonly IUserRepository userRepository;
+        private readonly ILogger<TokenService> logger;
 
-        public TokenService(IConfiguration configuration, IRefreshTokenRepository refreshTokenRepository, IUserRepository userRepository)
+        public TokenService( ILogger<TokenService> logger, IConfiguration configuration, IRefreshTokenRepository refreshTokenRepository, IUserRepository userRepository)
         {
             PasswordHashSecret = configuration[Constants.PasswordHashSecret] ?? throw new NullReferenceException();
             TokenSecret = configuration[Constants.TokenSecret] ?? throw new NullReferenceException();
             this.refreshTokenRepository = refreshTokenRepository;
             this.userRepository = userRepository;
+            this.logger = logger;
         }
         public string GeneratePasswordHash(string password)
         {
@@ -81,12 +83,17 @@ namespace CadnunsDev.MeusGastos.Backend.Domain.Services
             var refreshTokenEntity = await refreshTokenRepository.GetByTokenHashAsync(tokenHash);
 
             if (refreshTokenEntity is null)
+            {
+                logger.LogInformation("refreshTokenEntity não encontrado no DB");
                 return null;
-
+            }
             if (refreshTokenEntity.Revoked || refreshTokenEntity.Expires < DateTime.UtcNow)
+            {
+                logger.LogInformation("refreshTokenEntity id={id} revogado ou expirado", refreshTokenEntity.TokenId);
                 return null;
-
+            }
             var user = await userRepository.GetById(refreshTokenEntity.UserId);
+            logger.LogInformation("Usário encontrado={Found}", user != null);
             return user;
         }
 
