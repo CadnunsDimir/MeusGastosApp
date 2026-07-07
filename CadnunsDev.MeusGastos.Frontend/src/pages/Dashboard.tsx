@@ -24,6 +24,7 @@ export function Dashboard() {
       const month = currentDate.getMonth() + 1;
 
       try {
+        console.log("[Dashboard] Calling apis");
         const [accountsResponse, billsResponse, movementsResponse] = await Promise.all([
           listAccounts(),
           listBills(year, month),
