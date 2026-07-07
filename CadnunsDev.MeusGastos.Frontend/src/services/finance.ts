@@ -33,3 +33,8 @@ export async function listMovements(year: number, month: number) {
   const response = await api.get<MovementDTO[]>(`/bank/movements/${year}/${month}`);
   return response.data;
 }
+
+export async function createMovement(year: number, month: number, movement: MovementDTO) {
+  const response = await api.post<MovementDTO>(`/bank/movements/${year}/${month}`, movement);
+  return response.data;
+}

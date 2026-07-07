@@ -19,7 +19,7 @@ export interface BillResponseDTO {
 }
 
 export interface MovementDTO {
-  movementId: string;
+  movementId?: string;
   accountId: string;
   description: string;
   value: number;
