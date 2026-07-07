@@ -1,5 +1,6 @@
 import { useMemo, useState } from 'react';
 import { ArrowLeft, ArrowRight, DollarSign, Home, Moon, Sun, Wallet } from 'lucide-react';
+import { Link } from 'react-router-dom';
 import { format, addMonths, subMonths } from 'date-fns';
 import { useAuth } from '../contexts/AuthContext';
 
@@ -67,6 +68,24 @@ export function Dashboard() {
             >
               <Sun className="h-4 w-4" /> Tema
             </button>
+            <Link
+              to="/accounts"
+              className="inline-flex items-center gap-2 rounded-2xl border border-slate-200 bg-white px-4 py-2 text-sm font-semibold text-slate-900 transition hover:border-slate-300 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-100"
+            >
+              Contas
+            </Link>
+            <Link
+              to="/bills"
+              className="inline-flex items-center gap-2 rounded-2xl border border-slate-200 bg-white px-4 py-2 text-sm font-semibold text-slate-900 transition hover:border-slate-300 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-100"
+            >
+              Faturas
+            </Link>
+            <Link
+              to="/movements"
+              className="inline-flex items-center gap-2 rounded-2xl border border-slate-200 bg-white px-4 py-2 text-sm font-semibold text-slate-900 transition hover:border-slate-300 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-100"
+            >
+              Movimentações
+            </Link>
             <button
               onClick={logout}
               className="inline-flex items-center gap-2 rounded-2xl bg-emerald-500 px-4 py-2 text-sm font-semibold text-white transition hover:bg-emerald-600"
