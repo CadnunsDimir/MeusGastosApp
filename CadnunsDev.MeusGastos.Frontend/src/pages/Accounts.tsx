@@ -1,20 +1,74 @@
-import { useState } from 'react';
-import { Plus, Pencil, Trash2 } from 'lucide-react';
-
-interface Account {
-  id: string;
-  bankName: string;
-  balance: number;
-}
-
-const dummyAccounts: Account[] = [
-  { id: '1', bankName: 'Itaú', balance: 6520.4 },
-  { id: '2', bankName: 'Inter', balance: 3280.7 }
-];
+import { useEffect, useState } from 'react';
+import { Plus, Trash2 } from 'lucide-react';
+import { createAccount, deleteAccount, listAccounts } from '../services/finance';
+import type { BankAccountDTO, NewBankAccountDTO } from '../types/finance';
 
 export function Accounts() {
-  const [accounts, setAccounts] = useState<Account[]>(dummyAccounts);
+  const [accounts, setAccounts] = useState<BankAccountDTO[]>([]);
   const [isOpen, setIsOpen] = useState(false);
+  const [bankName, setBankName] = useState('');
+  const [initialBalance, setInitialBalance] = useState('0');
+  const [loading, setLoading] = useState(false);
+  const [saving, setSaving] = useState(false);
+  const [error, setError] = useState('');
+
+  useEffect(() => {
+    void fetchAccounts();
+  }, []);
+
+  const fetchAccounts = async () => {
+    setLoading(true);
+    setError('');
+
+    try {
+      const data = await listAccounts();
+      setAccounts(data);
+    } catch {
+      setError('Não foi possível carregar as contas.');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleCreateAccount = async (event: React.FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+    const parsedBalance = Number(initialBalance);
+
+    if (!bankName.trim() || Number.isNaN(parsedBalance)) {
+      setError('Preencha o nome do banco e o saldo inicial corretamente.');
+      return;
+    }
+
+    setSaving(true);
+    setError('');
+
+    try {
+      const newAccount = await createAccount({
+        accountName: bankName,
+        initialBalance: parsedBalance
+      } as NewBankAccountDTO);
+
+      setAccounts((current) => [...current, newAccount]);
+      setIsOpen(false);
+      setBankName('');
+      setInitialBalance('0');
+    } catch {
+      setError('Não foi possível criar a conta.');
+    } finally {
+      setSaving(false);
+    }
+  };
+
+  const handleDeleteAccount = async (accountId: string) => {
+    setError('');
+
+    try {
+      await deleteAccount(accountId);
+      setAccounts((current) => current.filter((account) => account.accountId !== accountId));
+    } catch {
+      setError('Não foi possível remover a conta.');
+    }
+  };
 
   return (
     <div className="mx-auto max-w-7xl px-4 py-6 sm:px-6 lg:px-8">
@@ -41,23 +95,39 @@ export function Accounts() {
             </tr>
           </thead>
           <tbody className="divide-y divide-slate-100 dark:divide-slate-800">
-            {accounts.map((account) => (
-              <tr key={account.id} className="hover:bg-slate-50 dark:hover:bg-slate-900/80">
-                <td className="px-4 py-4 text-slate-900 dark:text-slate-100">{account.bankName}</td>
-                <td className="px-4 py-4 text-slate-900 dark:text-slate-100">R$ {account.balance.toFixed(2)}</td>
-                <td className="px-4 py-4 text-right text-slate-500 dark:text-slate-400">
-                  <button className="mr-3 inline-flex items-center gap-1 text-slate-600 hover:text-slate-900 dark:text-slate-300 dark:hover:text-slate-100">
-                    <Pencil className="h-4 w-4" /> Editar
-                  </button>
-                  <button className="inline-flex items-center gap-1 text-red-500 hover:text-red-600">
-                    <Trash2 className="h-4 w-4" /> Excluir
-                  </button>
+            {loading ? (
+              <tr>
+                <td colSpan={3} className="px-4 py-8 text-center text-slate-500 dark:text-slate-400">
+                  Carregando contas...
                 </td>
               </tr>
-            ))}
+            ) : accounts.length === 0 ? (
+              <tr>
+                <td colSpan={3} className="px-4 py-8 text-center text-slate-500 dark:text-slate-400">
+                  Nenhuma conta cadastrada ainda.
+                </td>
+              </tr>
+            ) : (
+              accounts.map((account) => (
+                <tr key={account.accountId} className="hover:bg-slate-50 dark:hover:bg-slate-900/80">
+                  <td className="px-4 py-4 text-slate-900 dark:text-slate-100">{account.name}</td>
+                  <td className="px-4 py-4 text-slate-900 dark:text-slate-100">R$ {account.balance.toFixed(2)}</td>
+                  <td className="px-4 py-4 text-right text-slate-500 dark:text-slate-400">
+                    <button
+                      onClick={() => handleDeleteAccount(account.accountId)}
+                      className="inline-flex items-center gap-1 text-red-500 hover:text-red-600"
+                    >
+                      <Trash2 className="h-4 w-4" /> Excluir
+                    </button>
+                  </td>
+                </tr>
+              ))
+            )}
           </tbody>
         </table>
       </div>
+
+      {error && <p className="mt-4 text-sm text-red-500">{error}</p>}
 
       {isOpen && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/50 p-4">
@@ -68,11 +138,29 @@ export function Accounts() {
                 Fechar
               </button>
             </div>
-            <form className="mt-6 grid gap-4">
-              <input className="rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm text-slate-900 outline-none dark:border-slate-700 dark:bg-slate-900 dark:text-slate-100" placeholder="Nome do banco" />
-              <input className="rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm text-slate-900 outline-none dark:border-slate-700 dark:bg-slate-900 dark:text-slate-100" placeholder="Saldo inicial" type="number" />
-              <button className="rounded-2xl bg-emerald-500 px-4 py-3 text-sm font-semibold text-white transition hover:bg-emerald-600">
-                Salvar conta
+            <form className="mt-6 grid gap-4" onSubmit={handleCreateAccount}>
+              <input
+                value={bankName}
+                onChange={(e) => setBankName(e.target.value)}
+                className="rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm text-slate-900 outline-none dark:border-slate-700 dark:bg-slate-900 dark:text-slate-100"
+                placeholder="Nome do banco"
+                required
+              />
+              <input
+                value={initialBalance}
+                onChange={(e) => setInitialBalance(e.target.value)}
+                className="rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm text-slate-900 outline-none dark:border-slate-700 dark:bg-slate-900 dark:text-slate-100"
+                placeholder="Saldo inicial"
+                type="number"
+                step="0.01"
+                required
+              />
+              <button
+                type="submit"
+                className="rounded-2xl bg-emerald-500 px-4 py-3 text-sm font-semibold text-white transition hover:bg-emerald-600 disabled:cursor-not-allowed disabled:opacity-60"
+                disabled={saving}
+              >
+                {saving ? 'Salvando...' : 'Salvar conta'}
               </button>
             </form>
           </div>

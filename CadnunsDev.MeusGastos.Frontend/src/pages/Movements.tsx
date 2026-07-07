@@ -18,6 +18,34 @@ const dummyMovements: Movement[] = [
 export function Movements() {
   const [movements, setMovements] = useState<Movement[]>(dummyMovements);
   const [isOpen, setIsOpen] = useState(false);
+  const [description, setDescription] = useState('');
+  const [category, setCategory] = useState('');
+  const [amount, setAmount] = useState('');
+  const [date, setDate] = useState('');
+
+  const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+
+    const parsedAmount = Number(amount);
+    if (!description || !category || !date || Number.isNaN(parsedAmount)) {
+      return;
+    }
+
+    const newMovement: Movement = {
+      id: String(Date.now()),
+      description,
+      category,
+      amount: parsedAmount,
+      date
+    };
+
+    setMovements((current) => [newMovement, ...current]);
+    setIsOpen(false);
+    setDescription('');
+    setCategory('');
+    setAmount('');
+    setDate('');
+  };
 
   return (
     <div className="mx-auto max-w-7xl px-4 py-6 sm:px-6 lg:px-8">
@@ -77,12 +105,38 @@ export function Movements() {
                 Fechar
               </button>
             </div>
-            <form className="mt-6 grid gap-4">
-              <input className="rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm text-slate-900 outline-none dark:border-slate-700 dark:bg-slate-900 dark:text-slate-100" placeholder="Descrição" />
-              <input className="rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm text-slate-900 outline-none dark:border-slate-700 dark:bg-slate-900 dark:text-slate-100" placeholder="Categoria" />
-              <input className="rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm text-slate-900 outline-none dark:border-slate-700 dark:bg-slate-900 dark:text-slate-100" placeholder="Valor" type="number" />
-              <input className="rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm text-slate-900 outline-none dark:border-slate-700 dark:bg-slate-900 dark:text-slate-100" placeholder="Data" type="date" />
-              <button className="rounded-2xl bg-emerald-500 px-4 py-3 text-sm font-semibold text-white transition hover:bg-emerald-600">
+            <form className="mt-6 grid gap-4" onSubmit={handleSubmit}>
+              <input
+                value={description}
+                onChange={(e) => setDescription(e.target.value)}
+                className="rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm text-slate-900 outline-none dark:border-slate-700 dark:bg-slate-900 dark:text-slate-100"
+                placeholder="Descrição"
+                required
+              />
+              <input
+                value={category}
+                onChange={(e) => setCategory(e.target.value)}
+                className="rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm text-slate-900 outline-none dark:border-slate-700 dark:bg-slate-900 dark:text-slate-100"
+                placeholder="Categoria"
+                required
+              />
+              <input
+                value={amount}
+                onChange={(e) => setAmount(e.target.value)}
+                className="rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm text-slate-900 outline-none dark:border-slate-700 dark:bg-slate-900 dark:text-slate-100"
+                placeholder="Valor"
+                type="number"
+                required
+              />
+              <input
+                value={date}
+                onChange={(e) => setDate(e.target.value)}
+                className="rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm text-slate-900 outline-none dark:border-slate-700 dark:bg-slate-900 dark:text-slate-100"
+                placeholder="Data"
+                type="date"
+                required
+              />
+              <button className="rounded-2xl bg-emerald-500 px-4 py-3 text-sm font-semibold text-white transition hover:bg-emerald-600" type="submit">
                 Salvar movimentação
               </button>
             </form>

@@ -1,5 +1,5 @@
 import { createContext, useContext, useEffect, useMemo, useState } from 'react';
-import axios from 'axios';
+import { api, setApiAuthorizationHeader } from '../services/api';
 
 interface AuthState {
   user: { id: string; name: string } | null;
@@ -27,12 +27,6 @@ interface AuthContextValue extends AuthState {
 
 const AuthContext = createContext<AuthContextValue | undefined>(undefined);
 
-const api = axios.create({
-  baseURL: '/api',
-  headers: { 'Content-Type': 'application/json' },
-  withCredentials: true
-});
-
 export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [state, setState] = useState<AuthState>(() => ({
     user: null,
@@ -47,26 +41,44 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   }, []);
 
   useEffect(() => {
+    setApiAuthorizationHeader(state.token);
+  }, [state.token]);
+
+  useEffect(() => {
     const interceptor = api.interceptors.response.use(
       (response) => response,
       async (error) => {
-        if (error.response?.status === 401 && state.refreshToken) {
+        const originalRequest = error.config as Record<string, any>;
+
+        if (error.response?.status === 401 && state.refreshToken && !originalRequest?._retry) {
+          originalRequest._retry = true;
           try {
             const refreshResponse = await api.post('/auth/refresh', {
               refreshToken: state.refreshToken
             });
-            localStorage.setItem('accessToken', refreshResponse.data.accessToken);
+
+            const { accessToken, refreshToken } = refreshResponse.data;
+            localStorage.setItem('accessToken', accessToken);
+            localStorage.setItem('refreshToken', refreshToken);
+
             setState((prev) => ({
               ...prev,
-              token: refreshResponse.data.accessToken,
+              token: accessToken,
+              refreshToken,
               isAuthenticated: true
             }));
-            error.config.headers.Authorization = `Bearer ${refreshResponse.data.accessToken}`;
-            return api.request(error.config);
+
+            setApiAuthorizationHeader(accessToken);
+            originalRequest.headers = {
+              ...originalRequest.headers,
+              Authorization: `Bearer ${accessToken}`
+            };
+            return api.request(originalRequest);
           } catch {
             handleLogout();
           }
         }
+
         return Promise.reject(error);
       }
     );
@@ -79,8 +91,10 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const handleLogin = async ({ userName, password }: LoginPayload) => {
     const response = await api.post('/auth/login', { userName, password });
     const { user, accessToken, refreshToken } = response.data;
+
     localStorage.setItem('accessToken', accessToken);
     localStorage.setItem('refreshToken', refreshToken);
+    setApiAuthorizationHeader(accessToken);
     setState({ user, token: accessToken, refreshToken, isAuthenticated: true });
   };
 
@@ -92,6 +106,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const handleLogout = () => {
     localStorage.removeItem('accessToken');
     localStorage.removeItem('refreshToken');
+    setApiAuthorizationHeader(null);
     setState({ user: null, token: null, refreshToken: null, isAuthenticated: false });
   };
 
