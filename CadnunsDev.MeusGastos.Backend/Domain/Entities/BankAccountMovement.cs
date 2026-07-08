@@ -7,11 +7,11 @@ namespace CadnunsDev.MeusGastos.Backend.Domain.Entities
 {
     public class BankAccountMovement
     {
-        public Guid MovementId { get; set; }
+        public Guid MovementId { get; set; } = Guid.NewGuid();
         public Guid AccountId { get; set; }
         public required string Description { get; set; }
         public decimal Value { get; set; }
         public DateOnly Date { get; set; }
-        
+        public Guid? BillId { get; set; }
     }
 }

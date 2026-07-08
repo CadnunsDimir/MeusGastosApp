@@ -83,6 +83,8 @@ billsGroup.MapGet("/", (int year, int month, ClaimsPrincipal user, BillToPayServ
     service.ListAsync(user.GetUserName(), year, month));
 billsGroup.MapPost("/", (int year, int month, NewBillDTO newBill, ClaimsPrincipal user, BillToPayService service) =>
     service.CreateNewAsync(user.GetUserName(), year, month, newBill));
+billsGroup.MapPost("/pay", (int year, int month, PayingBillDTO data, ClaimsPrincipal user, BillToPayService service) =>
+    service.PayBill(user.GetUserName(), data));
 billsGroup.MapDelete("/{billId}", (Guid billId, ClaimsPrincipal user, BillToPayService service) =>
     service.DeleteBillAsync(user.GetUserName(), billId));
 

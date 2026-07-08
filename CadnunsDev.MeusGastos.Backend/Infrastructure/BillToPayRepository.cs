@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using CadnunsDev.MeusGastos.Backend.Domain.Entities;
 using CadnunsDev.MeusGastos.Backend.Domain.Repositories;
+using CadnunsDev.MeusGastos.Backend.Models.Exceptions;
 using Microsoft.EntityFrameworkCore;
 
 namespace CadnunsDev.MeusGastos.Backend.Infrastructure;
@@ -33,6 +34,11 @@ public class BillToPayRepository : IBillToPayRepository
         }
     }
 
+    public Task<BillToPay> FindOneAsync(Guid userId, Guid bIllId)
+    {
+        return context.BillsToPay.FirstAsync(x=> x.Category.UserId == userId && x.BillId == bIllId);
+    }
+
     public Task<List<BillToPay>> ListAsync(Guid userId, int year, int month)
     {
         return context.BillsToPay
@@ -50,6 +56,17 @@ public class BillToPayRepository : IBillToPayRepository
     public async Task SaveAllAsync(List<BillToPay> bills)
     {
         context.BillsToPay.UpdateRange(bills);
+        await context.SaveChangesAsync();
+    }
+
+    public async Task UpdateAsync(BillToPay account)
+    {
+        var entity = await context.BillsToPay.FindAsync(account.BillId);
+        if (entity == null)
+            throw new DbNotFoundException($"Fatura com ID {account.BillId} não encontrada.");
+
+        context.Entry(entity).CurrentValues.SetValues(account);
+        context.Entry(entity).Property(x => x.BillId).IsModified = false;
         await context.SaveChangesAsync();
     }
 }

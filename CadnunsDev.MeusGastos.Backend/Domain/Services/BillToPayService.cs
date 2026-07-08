@@ -13,14 +13,25 @@ namespace CadnunsDev.MeusGastos.Backend.Domain.Services
         private readonly IBillCategoryRepository categoryRepository;
         private readonly IUnitOfWork unitOfWork;
         private readonly ILogger<BillToPayService> logger;
+        private readonly IBankAccountRepository bankAccountRepository;
+        private readonly IBankAccountMovementRepository movementRepository;
 
-        public BillToPayService(IUserRepository userRepository, IBillToPayRepository billsRepository, IBillCategoryRepository categoryRepository, IUnitOfWork unitOfWork, ILogger<BillToPayService> logger)
+        public BillToPayService(
+            IUserRepository userRepository, 
+            IBillToPayRepository billsRepository, 
+            IBillCategoryRepository categoryRepository, 
+            IBankAccountRepository bankAccountRepository,
+            IBankAccountMovementRepository movementRepository,
+            IUnitOfWork unitOfWork, 
+            ILogger<BillToPayService> logger)
         {
             this.userRepository = userRepository;
             this.billsRepository = billsRepository;
             this.categoryRepository = categoryRepository;
             this.unitOfWork = unitOfWork;
             this.logger = logger;
+            this.bankAccountRepository = bankAccountRepository;
+            this.movementRepository = movementRepository;
         }
 
         internal async Task<BillResponseDTO> CreateNewAsync(string userName, int year, int month, NewBillDTO newBill)
@@ -91,10 +102,9 @@ namespace CadnunsDev.MeusGastos.Backend.Domain.Services
         {
             logger.LogInformation("ListAsync start for user={UserName}, year={Year}, month={Month}", userName, year, month);
 
-            var user = await userRepository.GetByUserName(userName) ?? throw new InvalidUserException();
-            logger.LogDebug("Found user with userName={UserName} and userId={UserId}", userName, user.UserId);
+            var userId = await GetUserId(userName);
 
-            var bills = await billsRepository.ListAsync(user.UserId, year, month);
+            var bills = await billsRepository.ListAsync(userId, year, month);
             logger.LogDebug("Found {BillCount} bills for year={Year}, month={Month}", bills.Count, year, month);
 
             if (bills.Count == 0)
@@ -109,7 +119,7 @@ namespace CadnunsDev.MeusGastos.Backend.Domain.Services
                     previousMonth = 12;
                 }
 
-                var billsPreviousMonth = await billsRepository.ListAsync(user.UserId, previousMonth, previousYear);
+                var billsPreviousMonth = await billsRepository.ListAsync(userId, previousMonth, previousYear);
                 logger.LogDebug("Found {PreviousBillCount} bills for previous year={PreviousYear}, month={PreviousMonth}", billsPreviousMonth.Count, previousYear, previousMonth);
 
                 if (billsPreviousMonth.Count > 0)
@@ -144,12 +154,97 @@ namespace CadnunsDev.MeusGastos.Backend.Domain.Services
             return result;
         }
 
-        internal async Task DeleteBillAsync(string userName, Guid billId)
+        private async Task<Guid> GetUserId(string userName)
         {
             var user = await userRepository.GetByUserName(userName) ?? throw new InvalidUserException();
             logger.LogDebug("Found user with userName={UserName} and userId={UserId}", userName, user.UserId);
+            return user.UserId;
+        }
 
-            await billsRepository.DeleteAsync(user.UserId, billId);
+        internal async Task DeleteBillAsync(string userName, Guid billId)
+        {
+            var userId = await GetUserId(userName);
+            await billsRepository.DeleteAsync(userId, billId);
+        }
+
+        public async Task<BillResponseDTO> PayBill(string userName, PayingBillDTO payingBillDTO)
+        {
+            BillResponseDTO? response = null;
+
+            logger.LogInformation(
+                "Iniciando pagamento da conta {BillId} para o usuário {UserName} utilizando a conta bancária {AccountId}",
+                payingBillDTO.BIllId, userName, payingBillDTO.AccountId);
+
+            try
+            {
+                await unitOfWork.ExecuteAsync(async () =>
+                {
+                    var userId = await GetUserId(userName);
+                    var bill = await billsRepository.FindOneAsync(userId, payingBillDTO.BIllId);
+
+                    if (bill is null)
+                    {
+                        logger.LogWarning(
+                            "Conta {BillId} não encontrada para o usuário {UserId}",
+                            payingBillDTO.BIllId, userId);
+                        throw new BillNotFoundException();
+                    }
+
+                    var account = (await bankAccountRepository.GetByUserId(userId))
+                        .FirstOrDefault(x => x.AccountId == payingBillDTO.AccountId);
+
+                    if (account is null)
+                    {
+                        logger.LogWarning(
+                            "Conta bancária {AccountId} não pertence ao usuário {UserId}. Pagamento da conta {BillId} cancelado",
+                            payingBillDTO.AccountId, userId, payingBillDTO.BIllId);
+                        throw new AccountNotBelongThisUserException();
+                    }
+
+                    var movement = new BankAccountMovement
+                    {
+                        Description = bill.BillDescription,
+                        Date = payingBillDTO.Date,
+                        AccountId = account.AccountId,
+                        Value = -bill.Value,
+                        BillId = bill.BillId
+                    };
+
+                    bill.IsPaid = true;
+                    account.Balance += movement.Value;
+
+                    logger.LogInformation(
+                        "Debitando {Value} da conta bancária {AccountId}. Saldo anterior atualizado para {NewBalance}",
+                        movement.Value, account.AccountId, account.Balance);
+
+                    await billsRepository.UpdateAsync(bill);
+                    await movementRepository.CreateAsync(movement);
+                    await bankAccountRepository.Update(account);
+
+                    logger.LogInformation(
+                        "Conta {BillId} marcada como paga e movimentação {MovementId} registrada com sucesso na conta {AccountId}",
+                        bill.BillId, movement.BillId, account.AccountId);
+
+                    response = BillResponseDTO.Map(bill);
+                });
+            }
+            catch (Exception ex)
+            {
+                logger.LogError(ex,
+                    "Erro ao processar pagamento da conta {BillId} para o usuário {UserId}",
+                    payingBillDTO.BIllId, userName);
+                throw;
+            }
+
+            if (response is null)
+            {
+                logger.LogError(
+                    "Pagamento da conta {BillId} não foi concluído para o usuário {UserName}, resposta nula ao final da transação",
+                    payingBillDTO.BIllId, userName);
+                throw new InvalidOperationException("Bill was not paid.");
+            }
+
+            return response;
         }
     }
 }

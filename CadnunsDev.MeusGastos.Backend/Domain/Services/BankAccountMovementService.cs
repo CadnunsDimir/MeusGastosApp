@@ -9,14 +9,18 @@ namespace CadnunsDev.MeusGastos.Backend.Domain.Services
         private readonly IUserRepository userRepository;
         private readonly IBankAccountMovementRepository movementRepository;
         private readonly IBankAccountRepository bankAccountRepository;
+        private readonly IBillToPayRepository billToPayRepository;
         private readonly IUnitOfWork unitOfWork;
         private readonly ILogger<BankAccountMovementService> logger;
 
-        public BankAccountMovementService(IUserRepository userRepository, IBankAccountMovementRepository movementRepository, IBankAccountRepository bankAccountRepository, IUnitOfWork unitOfWork, ILogger<BankAccountMovementService> logger)
+        public BankAccountMovementService(IUserRepository userRepository, IBankAccountMovementRepository movementRepository, IBankAccountRepository bankAccountRepository, 
+        IBillToPayRepository billToPayRepository,
+        IUnitOfWork unitOfWork, ILogger<BankAccountMovementService> logger)
         {
             this.userRepository = userRepository;
             this.movementRepository = movementRepository;
             this.bankAccountRepository = bankAccountRepository;
+            this.billToPayRepository = billToPayRepository;
             this.unitOfWork = unitOfWork;
             this.logger = logger;
         }
@@ -67,18 +71,26 @@ namespace CadnunsDev.MeusGastos.Backend.Domain.Services
                 logger.LogInformation("Delete movement {MovementId} requested by {UserName}", movementId, userName);
 
                 var user = await userRepository.GetByUserName(userName) ?? throw new Exceptions.InvalidUserException();
-                var entity = await movementRepository.FindByIdAndUserId(user.UserId, movementId);
+                var movement = await movementRepository.FindByIdAndUserId(user.UserId, movementId);
 
-                await movementRepository.DeleteAsync(user.UserId, movementId);
-
-                if (entity != null)
+                if (movement != null)
                 {
+                    if(movement.BillId is not null)
+                    {
+                        var bill = await billToPayRepository.FindOneAsync(user.UserId, (Guid)movement.BillId);
+                        bill.IsPaid = false;
+                        movement.BillId = null;
+                        await billToPayRepository.UpdateAsync(bill);
+                    }
+
+                    await movementRepository.DeleteAsync(user.UserId, movementId);
                     var accounts = await bankAccountRepository.GetByUserId(user.UserId);
-                    var account = accounts.First(x => x.AccountId == entity.AccountId);
-                    account.Balance -= entity.Value;
+                    var account = accounts.First(x => x.AccountId == movement.AccountId);
+                    account.Balance -= movement.Value;
 
                     logger.LogInformation("Update Account Balance on account {Name} from {UserName}", account.Name, userName);
                     await bankAccountRepository.Update(account);
+                    
                 }
             });
 
