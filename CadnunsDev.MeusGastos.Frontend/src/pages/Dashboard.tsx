@@ -1,11 +1,11 @@
 import { useEffect, useMemo, useState } from 'react';
 import { ArrowLeft, ArrowRight, DollarSign, Home, Wallet } from 'lucide-react';
 import { Link } from 'react-router-dom';
-import { format, addMonths, subMonths } from 'date-fns';
 import { useAuth } from '../contexts/AuthContext';
 import { listAccounts, listBills, listMovements } from '../services/finance';
 import type { BankAccountDTO, BillResponseDTO, MovementDTO } from '../types/finance';
 import { formatDateOnly } from '@/services/dates';
+import { MonthSelector } from '@/components/MonthSelector';
 
 export function Dashboard() {
   const [currentDate, setCurrentDate] = useState(new Date());
@@ -44,8 +44,6 @@ export function Dashboard() {
 
     fetchDashboardData();
   }, [currentDate]);
-
-  const monthLabel = useMemo(() => format(currentDate, 'MMMM yyyy'), [currentDate]);
 
   const totalBalance = useMemo(
     () => accounts.reduce((sum, account) => sum + account.balance, 0),
@@ -229,23 +227,9 @@ export function Dashboard() {
                 <p className="text-sm uppercase tracking-[0.35em] text-slate-500 dark:text-slate-400">Movimentações</p>
                 <h2 className="mt-2 text-2xl font-semibold text-slate-900 dark:text-slate-100">Este mês</h2>
               </div>
-              <div className="flex items-center gap-2 rounded-2xl border border-slate-200 bg-slate-50 p-2 dark:border-slate-800 dark:bg-slate-900">
-                <button
-                  onClick={() => setCurrentDate((date) => subMonths(date, 1))}
-                  className="rounded-2xl p-2 text-slate-600 transition hover:bg-slate-100 dark:text-slate-300 dark:hover:bg-slate-800"
-                  aria-label="Mês anterior"
-                >
-                  <ArrowLeft className="h-4 w-4" />
-                </button>
-                <span className="px-3 text-sm font-semibold text-slate-800 dark:text-slate-100">{monthLabel}</span>
-                <button
-                  onClick={() => setCurrentDate((date) => addMonths(date, 1))}
-                  className="rounded-2xl p-2 text-slate-600 transition hover:bg-slate-100 dark:text-slate-300 dark:hover:bg-slate-800"
-                  aria-label="Próximo mês"
-                >
-                  <ArrowRight className="h-4 w-4" />
-                </button>
-              </div>
+              <MonthSelector
+                date={currentDate}
+                onDateChange={date=> setCurrentDate(date)} />
             </div>
 
             <div className="mt-6 overflow-x-auto">

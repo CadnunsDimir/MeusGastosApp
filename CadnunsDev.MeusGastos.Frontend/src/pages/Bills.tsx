@@ -1,22 +1,8 @@
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Plus, Trash2 } from 'lucide-react';
 import { createBill, deleteBill, listBills } from '../services/finance';
 import type { BillResponseDTO, NewBillDTO } from '../types/finance';
-
-const monthNames = [
-  'Janeiro',
-  'Fevereiro',
-  'Março',
-  'Abril',
-  'Maio',
-  'Junho',
-  'Julho',
-  'Agosto',
-  'Setembro',
-  'Outubro',
-  'Novembro',
-  'Dezembro'
-];
+import { MonthSelector } from '@/components/MonthSelector';
 
 export function Bills() {
   const today = new Date();
@@ -37,8 +23,6 @@ export function Bills() {
     void fetchBills();
   }, [year, month]);
 
-  const monthLabel = useMemo(() => `${monthNames[month - 1]} / ${year}`, [month, year]);
-
   const fetchBills = async () => {
     setLoading(true);
     setError('');
@@ -53,23 +37,10 @@ export function Bills() {
     }
   };
 
-  const handlePreviousMonth = () => {
-    if (month === 1) {
-      setYear((current) => current - 1);
-      setMonth(12);
-    } else {
-      setMonth((current) => current - 1);
-    }
-  };
-
-  const handleNextMonth = () => {
-    if (month === 12) {
-      setYear((current) => current + 1);
-      setMonth(1);
-    } else {
-      setMonth((current) => current + 1);
-    }
-  };
+  const setCurrentDate = (date: Date) =>{
+    setYear(date.getFullYear());
+    setMonth(date.getMonth());
+  }
 
   const handleCreateBill = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
@@ -125,13 +96,11 @@ export function Bills() {
         <div>
           <p className="text-sm uppercase tracking-[0.35em] text-slate-500 dark:text-slate-400">Contas a pagar</p>
           <h1 className="mt-2 text-3xl font-semibold text-slate-900 dark:text-slate-100">Gerencie suas faturas</h1>
-          <p className="mt-2 text-slate-500 dark:text-slate-400">Mês: {monthLabel}</p>
         </div>
         <div className="flex flex-wrap items-center gap-3">
-          <div className="inline-flex items-center gap-2 rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm text-slate-900 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-100">
-            <button type="button" onClick={handlePreviousMonth} className="font-semibold text-slate-700 hover:text-slate-900 dark:text-slate-300 dark:hover:text-slate-100">Anterior</button>
-            <button type="button" onClick={handleNextMonth} className="font-semibold text-slate-700 hover:text-slate-900 dark:text-slate-300 dark:hover:text-slate-100">Próximo</button>
-          </div>
+          <MonthSelector
+            date={new Date(year, month - 1, 1)}
+            onDateChange={date => setCurrentDate(date)} />
           <button
             onClick={() => setIsOpen(true)}
             className="inline-flex items-center gap-2 rounded-2xl bg-emerald-500 px-5 py-3 text-sm font-semibold text-white transition hover:bg-emerald-600"
