@@ -36,7 +36,9 @@ public class BillToPayRepository : IBillToPayRepository
 
     public Task<BillToPay> FindOneAsync(Guid userId, Guid bIllId)
     {
-        return context.BillsToPay.FirstAsync(x=> x.Category.UserId == userId && x.BillId == bIllId);
+        return context.BillsToPay
+            .Include(x => x.Category)
+            .FirstAsync(x=> x.Category.UserId == userId && x.BillId == bIllId);
     }
 
     public Task<List<BillToPay>> ListAsync(Guid userId, int year, int month)

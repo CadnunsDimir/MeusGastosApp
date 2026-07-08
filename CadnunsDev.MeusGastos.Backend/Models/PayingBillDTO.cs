@@ -8,7 +8,7 @@ namespace CadnunsDev.MeusGastos.Backend.Models
     public class PayingBillDTO
     {
         public Guid BIllId { get; set; }
-        public DateOnly Date { get; internal set; }
-        public Guid AccountId { get; internal set; }
+        public DateOnly Date { get; set; }
+        public Guid AccountId { get; set; }
     }
 }
