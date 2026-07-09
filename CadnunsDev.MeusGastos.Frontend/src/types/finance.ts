@@ -33,3 +33,9 @@ export interface NewBillDTO {
   repeatValueNextMonth: boolean;
   value: number;
 }
+
+export interface PayBillDTO {
+  billId: string;
+  date: string;
+  accountId: string;
+}

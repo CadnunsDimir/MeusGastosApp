@@ -6,6 +6,7 @@ import { listAccounts, listBills, listMovements } from '../services/finance';
 import type { BankAccountDTO, BillResponseDTO, MovementDTO } from '../types/finance';
 import { formatDateOnly } from '@/services/dates';
 import { MonthSelector } from '@/components/MonthSelector';
+import { PayBillModal } from '@/components/PayBillModal';
 
 export function Dashboard() {
   const [currentDate, setCurrentDate] = useState(new Date());
@@ -14,34 +15,36 @@ export function Dashboard() {
   const [movements, setMovements] = useState<MovementDTO[]>([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [selectedBill, setSelectedBill] = useState<BillResponseDTO | null>(null);
+  const [isShowPayBillModal, setIsShowPayBillModal] = useState<boolean>(false);
   const { user, logout, toggleTheme } = useAuth();
 
-  useEffect(() => {
-    async function fetchDashboardData() {
-      setLoading(true);
-      setError(null);
+  async function fetchDashboardData() {
+    setLoading(true);
+    setError(null);
 
-      const year = currentDate.getFullYear();
-      const month = currentDate.getMonth() + 1;
+    const year = currentDate.getFullYear();
+    const month = currentDate.getMonth() + 1;
 
-      try {
-        console.log("[Dashboard] Calling apis");
-        const [accountsResponse, billsResponse, movementsResponse] = await Promise.all([
-          listAccounts(),
-          listBills(year, month),
-          listMovements(year, month)
-        ]);
+    try {
+      console.log("[Dashboard] Calling apis");
+      const [accountsResponse, billsResponse, movementsResponse] = await Promise.all([
+        listAccounts(),
+        listBills(year, month),
+        listMovements(year, month)
+      ]);
 
-        setAccounts(accountsResponse);
-        setBills(billsResponse);
-        setMovements(movementsResponse);
-      } catch (err) {
-        setError('Não foi possível carregar os dados do dashboard. Tente novamente.');
-      } finally {
-        setLoading(false);
-      }
+      setAccounts(accountsResponse);
+      setBills(billsResponse);
+      setMovements(movementsResponse);
+    } catch (err) {
+      setError('Não foi possível carregar os dados do dashboard. Tente novamente.');
+    } finally {
+      setLoading(false);
     }
+  }
 
+  useEffect(() => {
     fetchDashboardData();
   }, [currentDate]);
 
@@ -70,7 +73,8 @@ export function Dashboard() {
       movements.map((movement) => ({
         ...movement,
         accountName: accountMap.get(movement.accountId) ?? 'Conta'
-      })),
+      }))
+      .sort((a, b) => a.date.localeCompare(b.date)),
     [movements, accountMap]
   );
 
@@ -117,6 +121,11 @@ export function Dashboard() {
       .slice(0, 4),
     [bills]
   );
+
+  const showPayBillModal = (bill: BillResponseDTO) => {
+    setSelectedBill(bill);
+    setIsShowPayBillModal(true);
+  }
 
   return (
     <div className="mx-auto flex max-w-7xl flex-col gap-6 px-4 py-6 sm:px-6 lg:px-8">
@@ -309,7 +318,9 @@ export function Dashboard() {
                 <div className="rounded-3xl bg-slate-50 p-4 text-sm text-slate-500 dark:bg-slate-900 dark:text-slate-400">Nenhuma conta pendente para este mês.</div>
               ) : (
                 nextBills.map((bill) => (
-                  <div key={bill.billId} className="flex items-center justify-between gap-4 rounded-3xl bg-slate-50 px-4 py-4 dark:bg-slate-900">
+                  <div key={bill.billId} 
+                    onClick={() => showPayBillModal(bill) }
+                  className="flex items-center justify-between gap-4 rounded-3xl bg-slate-50 px-4 py-4 dark:bg-slate-900">
                     <div>
                       <p className="font-semibold text-slate-900 dark:text-slate-100">{bill.billDescription}</p>
                       <p className="text-sm text-slate-500 dark:text-slate-400">Vencimento dia {bill.paymentDay}</p>
@@ -321,6 +332,13 @@ export function Dashboard() {
                 ))
               )}
             </div>
+            <PayBillModal 
+              accounts={accounts}
+              bill={selectedBill}
+              isOpen={isShowPayBillModal}
+              setIsOpen={setIsShowPayBillModal}
+              onSuccess={()=> fetchDashboardData()}
+            />
           </article>
         </aside>
       </section>

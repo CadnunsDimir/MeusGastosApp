@@ -29,7 +29,7 @@ export function Bills() {
 
     try {
       const data = await listBills(year, month);
-      setBills(data);
+      setBills(data.sort((a, b) => a.paymentDay - b.paymentDay));
     } catch {
       setError('Não foi possível carregar as contas a pagar.');
     } finally {

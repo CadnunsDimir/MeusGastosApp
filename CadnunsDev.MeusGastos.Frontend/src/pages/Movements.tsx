@@ -39,7 +39,7 @@ export function Movements() {
                 listMovements(movementMonth.year, movementMonth.month)
             ]);
             setAccounts(accountsResponse);
-            setMovements(movementsResponse);
+            setMovements(movementsResponse.sort((a, b) => a.date.localeCompare(b.date)));
         } catch {
             setError('Não foi possível carregar as movimentações');
         } finally {
