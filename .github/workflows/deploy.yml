@@ -1,0 +1,89 @@
+name: Deploy VPS
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  deploy:
+
+    runs-on: ubuntu-latest
+
+    steps:
+
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      ########################################################
+      # Copia arquivos para VPS
+      ########################################################
+
+      - name: Upload Project
+        uses: appleboy/scp-action@v0.1.7
+        with:
+          host: ${{ secrets.VPS_HOST }}
+          username: ${{ secrets.VPS_USER }}
+          key: ${{ secrets.VPS_SSH_KEY }}
+          port: ${{ secrets.VPS_PORT }}
+
+          source: |
+            CadnunsDev.MeusGastos.Backend
+            CadnunsDev.MeusGastos.Frontend
+            docker-compose.yml
+
+          target: ${{ secrets.VPS_PATH }}
+
+          overwrite: true
+          strip_components: 0
+
+      ########################################################
+      # Cria .env
+      ########################################################
+
+      - name: Create .env
+        uses: appleboy/ssh-action@v1.2.0
+        with:
+          host: ${{ secrets.VPS_HOST }}
+          username: ${{ secrets.VPS_USER }}
+          key: ${{ secrets.VPS_SSH_KEY }}
+          port: ${{ secrets.VPS_PORT }}
+
+          script: |
+
+            cd ${{ secrets.VPS_PATH }}
+
+            cat > .env <<EOF
+            POSTGRES_USER=${{ secrets.POSTGRES_USER }}
+            POSTGRES_PASSWORD=${{ secrets.POSTGRES_PASSWORD }}
+            POSTGRES_DB=${{ secrets.POSTGRES_DB }}
+
+            ASPNETCORE_ENVIRONMENT=${{ secrets.ASPNETCORE_ENVIRONMENT }}
+
+            TokenSecret=${{ secrets.TOKEN_SECRET }}
+            PasswordHashSecret=${{ secrets.PASSWORD_HASH_SECRET }}
+            EOF
+
+      ########################################################
+      # Deploy
+      ########################################################
+
+      - name: Deploy Containers
+        uses: appleboy/ssh-action@v1.2.0
+        with:
+          host: ${{ secrets.VPS_HOST }}
+          username: ${{ secrets.VPS_USER }}
+          key: ${{ secrets.VPS_SSH_KEY }}
+          port: ${{ secrets.VPS_PORT }}
+
+          script: |
+
+            cd ${{ secrets.VPS_PATH }}
+
+            docker compose down
+
+            docker compose up \
+              --build \
+              -d
+
+            docker image prune -af
