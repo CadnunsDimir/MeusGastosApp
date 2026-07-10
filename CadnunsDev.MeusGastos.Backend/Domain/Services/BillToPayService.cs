@@ -246,5 +246,15 @@ namespace CadnunsDev.MeusGastos.Backend.Domain.Services
 
             return response;
         }
+
+        internal async Task<List<CategoryDTO>> QueryCategories(string userName, string query)
+        {
+            if (string.IsNullOrWhiteSpace(query) || query.Length < 3)
+                return [];
+                
+            var userId = await GetUserId(userName);
+            var categories = await categoryRepository.QueryAsync(userId, query, 3);
+            return CategoryDTO.MapBillCategories(categories);
+        }
     }
 }

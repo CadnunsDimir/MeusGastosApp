@@ -5,5 +5,6 @@ namespace CadnunsDev.MeusGastos.Backend.Domain.Repositories
     public interface IBillCategoryRepository : ICreateRepository<BillCategory>
     {
         Task<BillCategory?> FindByUserIdAndDescription(Guid userId, string categoryDescription);
+        Task<List<BillCategory>> QueryAsync(Guid userId, string query, int maxResults);
     }
 }

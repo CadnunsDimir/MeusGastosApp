@@ -25,4 +25,14 @@ public class BillCategoryRepository : IBillCategoryRepository
         return context.BillCategories
             .FirstOrDefaultAsync(x => x.UserId == userId && x.Description == categoryDescription);
     }
+
+    public async Task<List<BillCategory>> QueryAsync(Guid userId, string query, int maxResults)
+    {
+        return await context.BillCategories
+            .AsNoTracking()
+            .Where(c => c.UserId == userId && EF.Functions.Like(c.Description, $"%{maxResults}%"))
+            .OrderBy(c => c.Description)
+            .Take(maxResults)
+            .ToListAsync();
+    }
 }

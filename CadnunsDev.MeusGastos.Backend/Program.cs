@@ -4,6 +4,7 @@ using CadnunsDev.MeusGastos.Backend.Infrastructure;
 using CadnunsDev.MeusGastos.Backend.Domain.Repositories;
 using Microsoft.EntityFrameworkCore;
 using System.Security.Claims;
+using Microsoft.AspNetCore.Mvc;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -87,6 +88,9 @@ billsGroup.MapPost("/pay", (int year, int month, PayingBillDTO data, ClaimsPrinc
     service.PayBill(user.GetUserName(), data));
 billsGroup.MapDelete("/{billId}", (Guid billId, ClaimsPrincipal user, BillToPayService service) =>
     service.DeleteBillAsync(user.GetUserName(), billId));
+
+app.MapGet("/bank/bills/categories", ([FromQuery(Name = "q")] string query, ClaimsPrincipal user, BillToPayService billToPayService) =>
+    billToPayService.QueryCategories(user.GetUserName(), query));
 
 var movementsGroup = app.MapGroup("/bank/movements/{year}/{month}").RequireAuthorization();
 movementsGroup.MapGet("/", (int year, int month, ClaimsPrincipal user, BankAccountMovementService service) =>
