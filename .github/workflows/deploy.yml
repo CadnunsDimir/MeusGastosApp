@@ -11,6 +11,13 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
+      - name: Debug
+        run: |
+          pwd
+          ls -la
+          test -d CadnunsDev.MeusGastos.Backend && echo "Backend OK"
+          test -d CadnunsDev.MeusGastos.Frontend && echo "Frontend OK"
+          test -f docker-compose.yml && echo "Compose OK"
 
       - name: Checkout
         uses: actions/checkout@v4
