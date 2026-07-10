@@ -30,7 +30,7 @@ public class BillCategoryRepository : IBillCategoryRepository
     {
         return await context.BillCategories
             .AsNoTracking()
-            .Where(c => c.UserId == userId && EF.Functions.Like(c.Description, $"%{maxResults}%"))
+            .Where(c => c.UserId == userId && EF.Functions.Like(c.Description, $"%{query}%"))
             .OrderBy(c => c.Description)
             .Take(maxResults)
             .ToListAsync();
