@@ -66,8 +66,8 @@ jobs:
 
             ASPNETCORE_ENVIRONMENT=${{ secrets.ASPNETCORE_ENVIRONMENT }}
 
-            TokenSecret=${{ secrets.TOKEN_SECRET }}
-            PasswordHashSecret=${{ secrets.PASSWORD_HASH_SECRET }}
+            TOKEN_SECRET=${{ secrets.TOKEN_SECRET }}
+            PASSWORD_HASH_SECRET=${{ secrets.PASSWORD_HASH_SECRET }}
             EOF
 
       ########################################################
