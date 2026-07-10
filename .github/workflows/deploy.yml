@@ -36,10 +36,7 @@ jobs:
           key: ${{ secrets.VPS_SSH_KEY }}
           port: ${{ secrets.VPS_PORT }}
 
-          source: |
-            CadnunsDev.MeusGastos.Backend
-            CadnunsDev.MeusGastos.Frontend
-            docker-compose.yml
+          source: "CadnunsDev.MeusGastos.Backend/**,CadnunsDev.MeusGastos.Frontend/**,docker-compose.yml"
 
           target: ${{ secrets.VPS_PATH }}
 
