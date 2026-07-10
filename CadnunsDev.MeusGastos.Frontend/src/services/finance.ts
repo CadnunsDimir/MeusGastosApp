@@ -1,5 +1,5 @@
 import { api } from './api';
-import type { BankAccountDTO, BillResponseDTO, MovementDTO, NewBankAccountDTO, NewBillDTO, PayBillDTO } from '../types/finance';
+import type { BankAccountDTO, BillResponseDTO, CategorySuggestionDTO, MovementDTO, NewBankAccountDTO, NewBillDTO, PayBillDTO } from '../types/finance';
 
 export async function listAccounts() {
   const response = await api.get<BankAccountDTO[]>('/bank/account');
@@ -47,5 +47,18 @@ export async function payBill(payload: PayBillDTO){
   const [year, month] = payload.date.split('-');
   const monthNumber = Number(month);
   const response = await api.post<BillResponseDTO>(`/bank/bills/${year}/${monthNumber}/pay`, payload);
+  return response.data;
+}
+
+export async function searchCategories(query: string) {
+  const response = await api.get<CategorySuggestionDTO[]>(
+    "/bank/bills/categories",
+    {
+      params: {
+        q: query,
+      },
+    }
+  );
+
   return response.data;
 }

@@ -39,3 +39,8 @@ export interface PayBillDTO {
   date: string;
   accountId: string;
 }
+
+export interface CategorySuggestionDTO {
+  categoryId: string;
+  description: string;
+}

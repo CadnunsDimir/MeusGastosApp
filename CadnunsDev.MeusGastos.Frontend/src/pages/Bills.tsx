@@ -1,7 +1,7 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { Plus, Trash2 } from 'lucide-react';
-import { createBill, deleteBill, listBills } from '../services/finance';
-import type { BillResponseDTO, NewBillDTO } from '../types/finance';
+import { createBill, deleteBill, listBills, searchCategories } from '../services/finance';
+import type { BillResponseDTO, CategorySuggestionDTO, NewBillDTO } from '../types/finance';
 import { MonthSelector } from '@/components/MonthSelector';
 
 export function Bills() {
@@ -18,10 +18,55 @@ export function Bills() {
   const [loading, setLoading] = useState(false);
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState('');
+  const [suggestions, setSuggestions] = useState<CategorySuggestionDTO[]>([]);
+  const [showSuggestions, setShowSuggestions] = useState(false);
+  const [loadingSuggestions, setLoadingSuggestions] = useState(false);
 
   useEffect(() => {
     void fetchBills();
   }, [year, month]);
+
+  useEffect(() => {
+    if (category.trim().length < 3) {
+      setSuggestions([]);
+      setShowSuggestions(false);
+      return;
+    }
+
+    const timeout = setTimeout(async () => {
+      try {
+        setLoadingSuggestions(true);
+
+        const data = await searchCategories(category);
+
+        setSuggestions(data);
+        setShowSuggestions(data.length > 0);
+      } finally {
+        setLoadingSuggestions(false);
+      }
+    }, 400);
+
+    return () => clearTimeout(timeout);
+  }, [category]);
+
+  const wrapperRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    function handleClickOutside(event: MouseEvent) {
+      if (
+        wrapperRef.current &&
+        !wrapperRef.current.contains(event.target as Node)
+      ) {
+        setShowSuggestions(false);
+      }
+    }
+
+    document.addEventListener("mousedown", handleClickOutside);
+
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, []);
 
   const fetchBills = async () => {
     setLoading(true);
@@ -37,7 +82,7 @@ export function Bills() {
     }
   };
 
-  const setCurrentDate = (date: Date) =>{
+  const setCurrentDate = (date: Date) => {
     setYear(date.getFullYear());
     setMonth(date.getMonth());
   }
@@ -200,13 +245,33 @@ export function Bills() {
                 max="31"
                 required
               />
-              <input
-                value={category}
-                onChange={(e) => setCategory(e.target.value)}
-                className="rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm text-slate-900 outline-none dark:border-slate-700 dark:bg-slate-900 dark:text-slate-100"
-                placeholder="Categoria"
-                required
-              />
+              <div ref={wrapperRef} className="relative">
+                <input
+                  value={category}
+                  onChange={(e) => setCategory(e.target.value)}
+                  className="w-full rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm text-slate-900 outline-none dark:border-slate-700 dark:bg-slate-900 dark:text-slate-100"
+                  placeholder="Categoria"
+                  required
+                />
+
+                {showSuggestions && (
+                  <div className="absolute left-0 right-0 z-20 mt-1 rounded-xl border border-slate-200 bg-white shadow-lg dark:border-slate-700 dark:bg-slate-800">
+                    {suggestions.map((item) => (
+                      <button
+                        key={item.categoryId}
+                        type="button"
+                        onClick={() => {
+                          setCategory(item.description);
+                          setShowSuggestions(false);
+                        }}
+                        className="block w-full px-4 py-3 text-left text-sm hover:bg-slate-100 dark:hover:bg-slate-700"
+                      >
+                        {item.description}
+                      </button>
+                    ))}
+                  </div>
+                )}
+              </div>
               <label className="inline-flex items-center gap-3 rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm text-slate-900 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-100">
                 <input
                   type="checkbox"
