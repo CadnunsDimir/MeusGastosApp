@@ -57,7 +57,22 @@ builder.Services.AddRateLimiter(options =>
     });
 });
 
+if (builder.Environment.IsProduction())
+{
+    Console.WriteLine("Setting SeqServer On Production");
 
+    var seqServer = builder.Configuration[Constants.SeqServer];
+
+    if (!string.IsNullOrWhiteSpace(seqServer))
+    {
+        Log.Logger = new LoggerConfiguration()
+            .WriteTo.Console()
+            .WriteTo.Seq(seqServer)
+            .CreateLogger();
+
+        builder.Host.UseSerilog();
+    }
+}
 
 var app = builder.Build();
 
@@ -76,25 +91,25 @@ if (app.Environment.IsDevelopment())
     app.MapOpenApi();
 }
 
-if (app.Environment.IsProduction())
-{
-    Console.WriteLine("Setting SeqServer On Production");
-    var seqServer = builder.Configuration[Constants.SeqServer];
-    if(seqServer is not null)
-    {
-        Log.Logger = new LoggerConfiguration()
-            .WriteTo.Console()
-            .WriteTo.Seq(seqServer)
-            .CreateLogger();
+// if (app.Environment.IsProduction())
+// {
+//     Console.WriteLine("Setting SeqServer On Production");
+//     var seqServer = builder.Configuration[Constants.SeqServer];
+//     if(seqServer is not null)
+//     {
+//         Log.Logger = new LoggerConfiguration()
+//             .WriteTo.Console()
+//             .WriteTo.Seq(seqServer)
+//             .CreateLogger();
 
-        builder.Host.UseSerilog();
-    }else
-    {
-        Console.ForegroundColor = ConsoleColor.Yellow;
-        Console.WriteLine("SeqServer não foi configurado!");
-        Console.ResetColor();
-    }    
-}
+//         builder.Host.UseSerilog();
+//     }else
+//     {
+//         Console.ForegroundColor = ConsoleColor.Yellow;
+//         Console.WriteLine("SeqServer não foi configurado!");
+//         Console.ResetColor();
+//     }    
+// }
 
 app.UseExceptionHandler();
 app.UseHttpsRedirection();
