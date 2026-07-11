@@ -3,6 +3,8 @@ import { Plus, Trash2 } from 'lucide-react';
 import { createBill, deleteBill, listBills, searchCategories } from '../services/finance';
 import type { BillResponseDTO, CategorySuggestionDTO, NewBillDTO } from '../types/finance';
 import { MonthSelector } from '@/components/MonthSelector';
+import { NumericFormat } from 'react-number-format';
+import { BRL } from '@/services/currency';
 
 export function Bills() {
   const today = new Date();
@@ -12,7 +14,7 @@ export function Bills() {
   const [month, setMonth] = useState(today.getMonth() + 1);
   const [description, setDescription] = useState('');
   const [category, setCategory] = useState('');
-  const [value, setValue] = useState('0');
+  const [value, setValue] = useState<number | undefined>();
   const [paymentDay, setPaymentDay] = useState('1');
   const [repeatNextMonth, setRepeatNextMonth] = useState(true);
   const [loading, setLoading] = useState(false);
@@ -114,7 +116,7 @@ export function Bills() {
       setIsOpen(false);
       setDescription('');
       setCategory('');
-      setValue('0');
+      setValue(undefined);
       setPaymentDay('1');
       setRepeatNextMonth(true);
     } catch {
@@ -186,7 +188,7 @@ export function Bills() {
                   <td className="px-4 py-4 text-slate-900 dark:text-slate-100">{bill.billDescription}</td>
                   <td className="px-4 py-4 text-slate-500 dark:text-slate-400">{bill.category}</td>
                   <td className="px-4 py-4 text-slate-500 dark:text-slate-400">Dia {bill.paymentDay}</td>
-                  <td className="px-4 py-4 text-slate-900 dark:text-slate-100">R$ {bill.value.toFixed(2)}</td>
+                  <td className="px-4 py-4 text-slate-900 dark:text-slate-100">{BRL(bill.value)}</td>
                   <td className="px-4 py-4 text-center text-sm font-semibold">
                     <span className={`inline-flex rounded-full px-3 py-1 ${bill.isPaid ? 'bg-emerald-100 text-emerald-700' : 'bg-red-100 text-red-700'}`}>
                       {bill.isPaid ? 'Sim' : 'Não'}
@@ -226,13 +228,19 @@ export function Bills() {
                 placeholder="Descrição"
                 required
               />
-              <input
+              <NumericFormat
                 value={value}
-                onChange={(e) => setValue(e.target.value)}
                 className="rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm text-slate-900 outline-none dark:border-slate-700 dark:bg-slate-900 dark:text-slate-100"
                 placeholder="Valor"
-                type="number"
-                step="0.01"
+                thousandSeparator="."
+                decimalSeparator=","
+                decimalScale={2}
+                fixedDecimalScale
+                prefix="R$ "
+                allowNegative={false}
+                onValueChange={(values) => {
+                  setValue(values.floatValue);
+                }}
                 required
               />
               <input

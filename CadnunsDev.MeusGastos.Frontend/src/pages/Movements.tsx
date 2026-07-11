@@ -5,6 +5,7 @@ import { BankAccountDTO, MovementDTO } from '@/types/finance';
 import { formatDateOnly } from '@/services/dates';
 import { MonthSelector } from '@/components/MonthSelector';
 import { MovementFormFields, MovementFormModal } from '@/components/MovementFormModal';
+import { BRL } from '@/services/currency';
 
 interface MovementMonth{
     month: number,
@@ -155,7 +156,7 @@ export function Movements() {
                                         <td className="px-4 py-4 text-slate-900 dark:text-slate-100">{movement.description}</td>
                                         <td className="px-4 py-4 text-slate-500 dark:text-slate-400">{formatDateOnly(movement.date)}</td>
                                         <td className={`px-4 py-4 text-right font-semibold ${movement.value >= 0 ? 'text-emerald-600' : 'text-red-500'}`}>
-                                            R$ {Math.abs(movement.value).toFixed(2)}
+                                            {BRL(Math.abs(movement.value))}
                                         </td>
                                         <td className="px-4 py-4 text-right text-slate-500 dark:text-slate-400">
                                             <button className="mr-3 inline-flex items-center gap-1 text-slate-600 hover:text-slate-900 dark:text-slate-300 dark:hover:text-slate-100">

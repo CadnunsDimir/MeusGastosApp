@@ -7,6 +7,7 @@ import type { BankAccountDTO, BillResponseDTO, MovementDTO } from '../types/fina
 import { formatDateOnly } from '@/services/dates';
 import { MonthSelector } from '@/components/MonthSelector';
 import { PayBillModal } from '@/components/PayBillModal';
+import { BRL } from '@/services/currency';
 
 export function Dashboard() {
   const [currentDate, setCurrentDate] = useState(new Date());
@@ -185,7 +186,7 @@ export function Dashboard() {
               <div className="flex items-center justify-between gap-4">
                 <div>
                   <p className="text-sm uppercase tracking-[0.35em] text-slate-500 dark:text-slate-400">Saldo Total</p>
-                  <p className="mt-3 text-3xl font-semibold text-slate-900 dark:text-slate-100">R$ {totalBalance.toFixed(2)}</p>
+                  <p className="mt-3 text-3xl font-semibold text-slate-900 dark:text-slate-100">{ BRL(totalBalance)}</p>
                 </div>
                 <div className="rounded-2xl bg-emerald-100 p-3 text-emerald-700 dark:bg-emerald-700/10 dark:text-emerald-200">
                   <DollarSign className="h-6 w-6" />
@@ -200,7 +201,7 @@ export function Dashboard() {
                   accounts.map((account) => (
                     <div key={account.accountId} className="flex items-center justify-between rounded-3xl bg-slate-50 px-4 py-3 text-sm dark:bg-slate-900">
                       <span>{account.name}</span>
-                      <strong>R$ {account.balance.toFixed(2)}</strong>
+                      <strong>{BRL(account.balance)}</strong>
                     </div>
                   ))
                 )}
@@ -220,11 +221,11 @@ export function Dashboard() {
               <div className="mt-6 grid gap-4">
                 <div className="rounded-3xl bg-slate-50 p-4 dark:bg-slate-900">
                   <p className="text-sm text-slate-500 dark:text-slate-400">Até dia 15</p>
-                  <p className="mt-2 text-2xl font-semibold text-slate-900 dark:text-slate-100">R$ {toPayBefore.toFixed(2)}</p>
+                  <p className="mt-2 text-2xl font-semibold text-slate-900 dark:text-slate-100">{BRL(toPayBefore)}</p>
                 </div>
                 <div className="rounded-3xl bg-slate-50 p-4 dark:bg-slate-900">
                   <p className="text-sm text-slate-500 dark:text-slate-400">Após dia 15</p>
-                  <p className="mt-2 text-2xl font-semibold text-slate-900 dark:text-slate-100">R$ {toPayAfter.toFixed(2)}</p>
+                  <p className="mt-2 text-2xl font-semibold text-slate-900 dark:text-slate-100">{BRL(toPayAfter)}</p>
                 </div>
               </div>
             </article>
@@ -267,7 +268,7 @@ export function Dashboard() {
                         <td className="px-4 py-4 text-slate-500 dark:text-slate-400">{movement.accountName}</td>
                         <td className="px-4 py-4 text-slate-500 dark:text-slate-400">{formatDateOnly(movement.date)}</td>
                         <td className={`px-4 py-4 text-right font-semibold ${movement.value >= 0 ? 'text-emerald-600' : 'text-red-500'}`}>
-                          R$ {Math.abs(movement.value).toFixed(2)}
+                          { BRL(Math.abs(movement.value)) }
                         </td>
                       </tr>
                     ))
@@ -285,7 +286,7 @@ export function Dashboard() {
               {overviewCards.map((card) => (
                 <div key={card.title} className="rounded-3xl border border-slate-200 bg-slate-50 p-4 dark:border-slate-800 dark:bg-slate-900">
                   <p className="text-sm text-slate-500 dark:text-slate-400">{card.title}</p>
-                  <p className="mt-3 text-xl font-semibold text-slate-900 dark:text-slate-100">R$ {card.value.toFixed(2)}</p>
+                  <p className="mt-3 text-xl font-semibold text-slate-900 dark:text-slate-100">{BRL(card.value)}</p>
                 </div>
               ))}
             </div>
@@ -305,7 +306,7 @@ export function Dashboard() {
               {distributionItems.map((item) => (
                 <div key={item.category} className="flex items-center justify-between gap-3 rounded-3xl bg-slate-50 px-4 py-3 text-sm dark:bg-slate-900">
                   <span>{item.category}</span>
-                  <strong>R$ {item.value.toFixed(2)}</strong>
+                  <strong>{BRL(item.value)}</strong>
                 </div>
               ))}
             </div>

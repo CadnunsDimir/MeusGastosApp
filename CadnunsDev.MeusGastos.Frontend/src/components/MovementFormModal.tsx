@@ -1,5 +1,7 @@
+import { BRL } from "@/services/currency";
 import { BankAccountDTO } from "@/types/finance";
 import { useEffect, useState } from "react";
+import { NumericFormat } from "react-number-format";
 
 export interface MovementFormFields{
         description: string,
@@ -24,14 +26,14 @@ export function MovementFormModal({
     setIsOpen
 }:MovementFormModalProps) {
     const [description, setDescription] = useState('');
-    const [amount, setAmount] = useState('');
+    const [amount, setAmount] = useState<number | undefined>();
     const [date, setDate] = useState('');
     const [selectedAccountId, setSelectedAccountId] = useState<string>('');
 
     useEffect(()=> {
         if(isOpen) return;
         setDescription('');
-        setAmount('');
+        setAmount(undefined);
         setDate('');
     },[isOpen]);
 
@@ -65,13 +67,19 @@ export function MovementFormModal({
                                 placeholder="Descrição"
                                 required
                             />
-                            <input
+                             <NumericFormat
                                 value={amount}
-                                onChange={(e) => setAmount(e.target.value)}
                                 className="rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm text-slate-900 outline-none dark:border-slate-700 dark:bg-slate-900 dark:text-slate-100"
                                 placeholder="Valor"
-                                type="number"
-                                required
+                                thousandSeparator="."
+                                decimalSeparator=","
+                                decimalScale={2}
+                                fixedDecimalScale
+                                prefix="R$ "
+                                allowNegative={true}
+                                onValueChange={(values) => {
+                                    setAmount(values.floatValue);
+                                }}
                             />
                             <input
                                 value={date}
@@ -81,6 +89,7 @@ export function MovementFormModal({
                                 type="date"
                                 required
                             />
+                           
                             <select
                                 value={selectedAccountId}
                                 onChange={(e) => setSelectedAccountId(e.target.value)}
@@ -90,7 +99,7 @@ export function MovementFormModal({
                                 <option value="">Selecione uma conta</option>
                                 {accounts.map((account) => (
                                     <option key={account.accountId} value={account.accountId}>
-                                        {account.name} (R$ {account.balance.toFixed(2)})
+                                        {account.name} ({ BRL(account.balance) })
                                     </option>
                                 ))}
                             </select>

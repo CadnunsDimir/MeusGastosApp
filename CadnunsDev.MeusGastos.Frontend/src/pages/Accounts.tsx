@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import { Plus, Trash2 } from 'lucide-react';
 import { createAccount, deleteAccount, listAccounts } from '../services/finance';
 import type { BankAccountDTO, NewBankAccountDTO } from '../types/finance';
+import { BRL } from '@/services/currency';
 
 export function Accounts() {
   const [accounts, setAccounts] = useState<BankAccountDTO[]>([]);
@@ -111,7 +112,7 @@ export function Accounts() {
               accounts.map((account) => (
                 <tr key={account.accountId} className="hover:bg-slate-50 dark:hover:bg-slate-900/80">
                   <td className="px-4 py-4 text-slate-900 dark:text-slate-100">{account.name}</td>
-                  <td className="px-4 py-4 text-slate-900 dark:text-slate-100">R$ {account.balance.toFixed(2)}</td>
+                  <td className="px-4 py-4 text-slate-900 dark:text-slate-100">{BRL(account.balance)}</td>
                   <td className="px-4 py-4 text-right text-slate-500 dark:text-slate-400">
                     <button
                       onClick={() => handleDeleteAccount(account.accountId)}

@@ -1,3 +1,4 @@
+import { BRL } from '@/services/currency';
 import { payBill } from '@/services/finance';
 import { BankAccountDTO, BillResponseDTO, PayBillDTO } from '@/types/finance';
 import { useState, useEffect } from 'react';
@@ -90,7 +91,7 @@ export function PayBillModal({
                 <option value="">Selecione uma conta</option>
                 {accounts.map((account) => (
                   <option key={account.accountId} value={account.accountId}>
-                    {account.name} (R$ {account.balance.toFixed(2)})
+                    {account.name} ({ BRL(account.balance)})
                   </option>
                 ))}
               </select>
