@@ -70,6 +70,7 @@ export function MovementFormModal({
                              <NumericFormat
                                 value={amount}
                                 className="rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm text-slate-900 outline-none dark:border-slate-700 dark:bg-slate-900 dark:text-slate-100"
+                                inputMode="decimal"
                                 placeholder="Valor"
                                 thousandSeparator="."
                                 decimalSeparator=","
@@ -80,6 +81,7 @@ export function MovementFormModal({
                                 onValueChange={(values) => {
                                     setAmount(values.floatValue);
                                 }}
+                                required
                             />
                             <input
                                 value={date}

@@ -3,12 +3,13 @@ import { Plus, Trash2 } from 'lucide-react';
 import { createAccount, deleteAccount, listAccounts } from '../services/finance';
 import type { BankAccountDTO, NewBankAccountDTO } from '../types/finance';
 import { BRL } from '@/services/currency';
+import { NumericFormat } from 'react-number-format';
 
 export function Accounts() {
   const [accounts, setAccounts] = useState<BankAccountDTO[]>([]);
   const [isOpen, setIsOpen] = useState(false);
   const [bankName, setBankName] = useState('');
-  const [initialBalance, setInitialBalance] = useState('0');
+  const [initialBalance, setInitialBalance] = useState<number>(0);
   const [loading, setLoading] = useState(false);
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState('');
@@ -52,7 +53,7 @@ export function Accounts() {
       setAccounts((current) => [...current, newAccount]);
       setIsOpen(false);
       setBankName('');
-      setInitialBalance('0');
+      setInitialBalance(0);
     } catch {
       setError('Não foi possível criar a conta.');
     } finally {
@@ -147,13 +148,20 @@ export function Accounts() {
                 placeholder="Nome do banco"
                 required
               />
-              <input
+              <NumericFormat
                 value={initialBalance}
-                onChange={(e) => setInitialBalance(e.target.value)}
                 className="rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm text-slate-900 outline-none dark:border-slate-700 dark:bg-slate-900 dark:text-slate-100"
-                placeholder="Saldo inicial"
-                type="number"
-                step="0.01"
+                inputMode="decimal"
+                placeholder="Valor"
+                thousandSeparator="."
+                decimalSeparator=","
+                decimalScale={2}
+                fixedDecimalScale
+                prefix="R$ "
+                allowNegative={true}
+                onValueChange={(values) => {
+                  setInitialBalance(values.floatValue ?? 0);
+                }}
                 required
               />
               <button
