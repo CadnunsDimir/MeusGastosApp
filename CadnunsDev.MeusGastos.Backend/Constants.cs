@@ -9,5 +9,6 @@ namespace CadnunsDev.MeusGastos.Backend
     {
         internal static readonly string PasswordHashSecret = "PasswordHashSecret";
         internal static readonly string TokenSecret = "TokenSecret";
+        internal static readonly string SeqServer = "SeqServer";
     }
 }

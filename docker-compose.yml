@@ -21,6 +21,7 @@ services:
       - ConnectionStrings__DefaultConnection=Host=db;Port=5432;Database=${POSTGRES_DB};Username=${POSTGRES_USER};Password=${POSTGRES_PASSWORD}
       - TokenSecret=${TOKEN_SECRET}
       - PasswordHashSecret=${PASSWORD_HASH_SECRET}
+      - SeqServer=${SEQ_SERVER}
     ports:
       - "5000:80"
     restart: unless-stopped

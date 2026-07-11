@@ -5,6 +5,9 @@ using CadnunsDev.MeusGastos.Backend.Domain.Repositories;
 using Microsoft.EntityFrameworkCore;
 using System.Security.Claims;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.RateLimiting;
+using Serilog;
+using CadnunsDev.MeusGastos.Backend;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -44,7 +47,21 @@ builder.Services.AddScoped<BankAccountService>();
 builder.Services.AddScoped<BillToPayService>();
 builder.Services.AddScoped<BankAccountMovementService>();
 
+builder.Services.AddRateLimiter(options =>
+{
+    options.AddFixedWindowLimiter("api", opt =>
+    {
+        opt.PermitLimit = 10;
+        opt.Window = TimeSpan.FromMinutes(1);
+        opt.QueueLimit = 0;
+    });
+});
+
+
+
 var app = builder.Build();
+
+app.UseRateLimiter();
 
 if (app.Environment.IsDevelopment())
 {
@@ -59,19 +76,43 @@ if (app.Environment.IsDevelopment())
     app.MapOpenApi();
 }
 
+if (app.Environment.IsProduction())
+{
+    Console.WriteLine("Setting SeqServer On Production");
+    var seqServer = builder.Configuration[Constants.SeqServer];
+    if(seqServer is not null)
+    {
+        Log.Logger = new LoggerConfiguration()
+            .WriteTo.Console()
+            .WriteTo.Seq(seqServer)
+            .CreateLogger();
+
+        builder.Host.UseSerilog();
+    }else
+    {
+        Console.ForegroundColor = ConsoleColor.Yellow;
+        Console.WriteLine("SeqServer não foi configurado!");
+        Console.ResetColor();
+    }    
+}
+
 app.UseExceptionHandler();
 app.UseHttpsRedirection();
 app.UseJwtAuthentication();
 await app.ApplyDBMigrationsAsync();
 
+//Testes de health e login
 app.MapGet("/ok", () => "OK" );
-app.MapPost("/auth/newuser", (NewUserService service, NewUserRequestDTO newUserRequest) => service.Create(newUserRequest) );
-app.MapPost("/auth/login", (LoginRequestDTO loginRequest, LoginService service) => service.Login(loginRequest));
-app.MapPost("/auth/refresh", (RefreshRequestDTO request, LoginService service) => service.RefreshToken(request));
-app.MapPost("/auth/logout", (RefreshRequestDTO request, LoginService service) => service.Logout(request)).RequireAuthorization();
 app.MapGet("/profile", () => "Profile" ).RequireAuthorization();
 
-var bankAcountGroup = app.MapGroup("/bank/account").RequireAuthorization();
+var auth = app.MapGroup("/auth");
+auth.MapPost("/newuser", (NewUserService service, NewUserRequestDTO newUserRequest) => service.Create(newUserRequest));
+auth.MapPost("/login", (LoginRequestDTO loginRequest, LoginService service) => service.Login(loginRequest)).RequireRateLimiting("api");
+auth.MapPost("/refresh", (RefreshRequestDTO request, LoginService service) => service.RefreshToken(request));
+auth.MapPost("/logout", (RefreshRequestDTO request, LoginService service) => service.Logout(request)).RequireAuthorization();
+
+var bankAcountGroup = app.MapGroup("/bank/account")
+    .RequireAuthorization();
 bankAcountGroup.MapGet("/", (ClaimsPrincipal user, BankAccountService bankAccountService) =>
     bankAccountService.ListByUserNameAsync(user.GetUserName()));
 bankAcountGroup.MapPost("/", (NewBankAccountDTO newBankAccountDTO, ClaimsPrincipal user, BankAccountService bankAccountService) =>
@@ -79,7 +120,8 @@ bankAcountGroup.MapPost("/", (NewBankAccountDTO newBankAccountDTO, ClaimsPrincip
 bankAcountGroup.MapDelete("/{accountId}", (Guid accountId, ClaimsPrincipal user, BankAccountService bankAccountService) =>
     bankAccountService.DeleteAsync(user.GetUserName(), accountId));
 
-var billsGroup = app.MapGroup("/bank/bills/{year}/{month}").RequireAuthorization();
+var billsGroup = app.MapGroup("/bank/bills/{year}/{month}")
+    .RequireAuthorization();
 billsGroup.MapGet("/", (int year, int month, ClaimsPrincipal user, BillToPayService service) =>
     service.ListAsync(user.GetUserName(), year, month));
 billsGroup.MapPost("/", (int year, int month, NewBillDTO newBill, ClaimsPrincipal user, BillToPayService service) =>
@@ -92,7 +134,8 @@ billsGroup.MapDelete("/{billId}", (Guid billId, ClaimsPrincipal user, BillToPayS
 app.MapGet("/bank/bills/categories", ([FromQuery(Name = "q")] string query, ClaimsPrincipal user, BillToPayService billToPayService) =>
     billToPayService.QueryCategories(user.GetUserName(), query));
 
-var movementsGroup = app.MapGroup("/bank/movements/{year}/{month}").RequireAuthorization();
+var movementsGroup = app.MapGroup("/bank/movements/{year}/{month}")
+    .RequireAuthorization();
 movementsGroup.MapGet("/", (int year, int month, ClaimsPrincipal user, BankAccountMovementService service) =>
     service.ListAsync(user.GetUserName(), year, month));
 movementsGroup.MapPost("/", (int year, int month, NewAccountMovementDTO movement, ClaimsPrincipal user, BankAccountMovementService service) =>
