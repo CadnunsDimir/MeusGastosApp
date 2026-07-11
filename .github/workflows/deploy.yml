@@ -93,3 +93,18 @@ jobs:
               -d
 
             docker image prune -af
+
+            timeout=60
+
+            until curl -fs http://localhost:5000/ok
+            do
+                sleep 2
+                timeout=$((timeout - 2))
+
+                if [ $timeout -le 0 ]; then
+                    docker compose logs api
+                    exit 1
+                fi
+            done
+
+            echo "Deploy concluído com sucesso."
