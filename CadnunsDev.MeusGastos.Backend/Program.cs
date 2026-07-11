@@ -71,6 +71,9 @@ if (builder.Environment.IsProduction())
             .CreateLogger();
 
         builder.Host.UseSerilog();
+    } else
+    {
+        Console.WriteLine("SeqServer is not defined on ENV vars");
     }
 }
 

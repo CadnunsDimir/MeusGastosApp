@@ -68,6 +68,7 @@ jobs:
 
             TOKEN_SECRET=${{ secrets.TOKEN_SECRET }}
             PASSWORD_HASH_SECRET=${{ secrets.PASSWORD_HASH_SECRET }}
+            SEQ_SERVER=${{ secrets.SEQ_SERVER }}
             EOF
 
       ########################################################
