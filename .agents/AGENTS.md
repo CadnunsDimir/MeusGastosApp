@@ -53,3 +53,51 @@ Este arquivo contém as instruções, padrões arquiteturais e regras tecnológi
 
 - **Backend**: Use xUnit e `WebApplicationFactory` para testes de integração de ponta a ponta na API.
 - **Frontend**: Para testar componentes React, sempre envolva o componente renderizado em um harness/decorator que proveja o `QueryClientProvider` e o `MemoryRouter`.
+
+---
+
+## 📝 Padrão de Commits
+
+Utilize o padrão **Conventional Commits** (<https://www.conventionalcommits.org>) em **todos** os commits deste repositório.
+
+### Formato
+
+```
+<tipo>(<escopo>): <descrição curta em minúsculas>
+
+[corpo opcional com detalhes adicionais]
+```
+
+### Tipos aceitos
+
+| Tipo       | Quando usar                                              |
+|------------|----------------------------------------------------------|
+| `feat`     | Nova funcionalidade                                      |
+| `fix`      | Correção de bug                                          |
+| `refactor` | Refatoração sem adição de feature ou correção de bug     |
+| `chore`    | Tarefas de manutenção (CI, dependências, configurações)  |
+| `docs`     | Alterações somente em documentação                       |
+| `test`     | Adição ou ajuste de testes                               |
+| `perf`     | Melhoria de performance                                  |
+| `style`    | Formatação, espaços, ponto e vírgula — sem mudança lógica|
+
+### Escopos obrigatórios
+
+- **`backend`** — alterações em `CadnunsDev.MeusGastos.Backend/`
+- **`frontend`** — alterações em `CadnunsDev.MeusGastos.Frontend/`
+- **`infra`** — `docker-compose.yml`, `Dockerfile`, CI/CD
+- **`docs`** — arquivos em `docs/` ou arquivos `.md` na raiz
+
+> Quando um commit envolver exclusivamente backend **ou** frontend, use o escopo correspondente.
+> Quando abranger ambos, **prefira dois commits separados** (um por escopo).
+
+### Exemplos
+
+```
+feat(backend): add MovementType enum and v2 creation endpoint
+fix(frontend): prevent negative values in movement form
+refactor(backend): extract transfer logic to a dedicated method
+docs(docs): add movement type categorization spec
+chore(infra): bump postgres image to 16
+```
+
