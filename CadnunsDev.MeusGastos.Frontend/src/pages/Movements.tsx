@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { Plus, Pencil, Trash2 } from 'lucide-react';
-import { createMovement, deleteMovement, listAccounts, listMovements } from '@/services/finance';
-import { BankAccountDTO, MovementDTO } from '@/types/finance';
+import { createMovementV2, deleteMovement, listAccounts, listMovements } from '@/services/finance';
+import { BankAccountDTO, MovementDTO, MovementType, NewAccountMovementV2DTO } from '@/types/finance';
 import { formatDateOnly } from '@/services/dates';
 import { MonthSelector } from '@/components/MonthSelector';
 import { MovementFormFields, MovementFormModal } from '@/components/MovementFormModal';
@@ -50,11 +50,19 @@ export function Movements() {
 
     
 
-    const handleDelete = async (event: React.MouseEvent<HTMLButtonElement>, id?: string) =>{
+    const handleDelete = async (event: React.MouseEvent<HTMLButtonElement>, id?: string) => {
         try {
             setLoading(true);
+            const movementToDelete = movements.find(x => x.movementId === id);
             await deleteMovement(movementMonth.year, movementMonth.month, id ?? "");
-            setMovements((current) => current.filter(x=> x.movementId !== id));
+            
+            setMovements((current) => current.filter(x => 
+                x.movementId !== id && 
+                (movementToDelete?.relatedMovementId ? x.movementId !== movementToDelete.relatedMovementId : true)
+            ));
+
+            const updatedAccounts = await listAccounts();
+            setAccounts(updatedAccounts);
             setLoading(false);
         } catch {
             setError("Ocorreu um erro ao remover movimento")
@@ -79,27 +87,59 @@ export function Movements() {
         description,
         accountId,
         amount,
-        date
-    }: MovementFormFields)=>{
+        date,
+        type,
+        destinationAccountId
+    }: MovementFormFields) => {
         if (!description || !accountId || !date || Number.isNaN(amount)) {
-            setError("Preencha todos os campos!")
+            setError("Preencha todos os campos!");
             return;
         }
 
-        const payload: MovementDTO = {
-            description,
+        if (type === MovementType.Transfer && !destinationAccountId) {
+            setError("Selecione a conta de destino para a transferência!");
+            return;
+        }
+
+        const day = Number(date.split('-')[2]);
+        const year = Number(date.split('-')[0]);
+        const month = Number(date.split('-')[1]);
+
+        const payload: NewAccountMovementV2DTO = {
+            type,
             accountId,
+            destinationAccountId: type === MovementType.Transfer ? destinationAccountId : undefined,
             value: amount,
-            date
+            description,
+            day
         };
 
-        try{
-            var dateParsed = new Date(payload.date);
-            var newMoviment = await createMovement(dateParsed.getFullYear(), dateParsed.getMonth()+1, payload);
-            setMovements((current) => [newMoviment, ...current]);
+        try {
+            const newMovements = await createMovementV2(year, month, payload);
+            setMovements((current) => [...newMovements, ...current]);
+
+            const updatedAccounts = await listAccounts();
+            setAccounts(updatedAccounts);
+
             setIsOpen(false);
         } catch {
-            setError("Ocorreu um erro ao salvar")
+            setError("Ocorreu um erro ao salvar");
+        }
+    }
+
+    function renderTypeBadge(type?: MovementType) {
+        if (!type) return null;
+        switch (type) {
+            case MovementType.Revenue:
+                return <span className="ml-2 inline-flex items-center rounded-md bg-emerald-50 px-2 py-1 text-xs font-medium text-emerald-700 ring-1 ring-inset ring-emerald-600/15">Receita</span>;
+            case MovementType.Expense:
+                return <span className="ml-2 inline-flex items-center rounded-md bg-red-50 px-2 py-1 text-xs font-medium text-red-700 ring-1 ring-inset ring-red-600/10">Despesa</span>;
+            case MovementType.Transfer:
+                return <span className="ml-2 inline-flex items-center rounded-md bg-blue-50 px-2 py-1 text-xs font-medium text-blue-700 ring-1 ring-inset ring-blue-700/10">Transferência</span>;
+            case MovementType.Investment:
+                return <span className="ml-2 inline-flex items-center rounded-md bg-amber-50 px-2 py-1 text-xs font-medium text-amber-800 ring-1 ring-inset ring-amber-600/15">Investimento</span>;
+            default:
+                return null;
         }
     }
 
@@ -153,7 +193,10 @@ export function Movements() {
                             ) : (
                                 movements.map((movement) => (
                                     <tr key={movement.movementId} className="hover:bg-slate-50 dark:hover:bg-slate-900/80">
-                                        <td className="px-4 py-4 text-slate-900 dark:text-slate-100">{movement.description}</td>
+                                        <td className="px-4 py-4 text-slate-900 dark:text-slate-100">
+                                            {movement.description}
+                                            {renderTypeBadge(movement.type)}
+                                        </td>
                                         <td className="px-4 py-4 text-slate-500 dark:text-slate-400">{formatDateOnly(movement.date)}</td>
                                         <td className={`px-4 py-4 text-right font-semibold ${movement.value >= 0 ? 'text-emerald-600' : 'text-red-500'}`}>
                                             {BRL(Math.abs(movement.value))}

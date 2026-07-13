@@ -1,21 +1,23 @@
 import { BRL } from "@/services/currency";
-import { BankAccountDTO } from "@/types/finance";
+import { BankAccountDTO, MovementType } from "@/types/finance";
 import { useEffect, useState } from "react";
 import { NumericFormat } from "react-number-format";
 
-export interface MovementFormFields{
-        description: string,
-        amount: number,
-        date: string,
-        accountId: string
-    }
+export interface MovementFormFields {
+    description: string;
+    amount: number;
+    date: string;
+    type: MovementType;
+    accountId: string;
+    destinationAccountId?: string;
+}
 
 export interface MovementFormModalProps {
-    isOpen : boolean,
-    accounts: BankAccountDTO[],
-    error: string | undefined,
-    setIsOpen: (status: boolean) => void
-    onSubmit: (data: MovementFormFields) => void
+    isOpen : boolean;
+    accounts: BankAccountDTO[];
+    error: string | undefined;
+    setIsOpen: (status: boolean) => void;
+    onSubmit: (data: MovementFormFields) => void;
 }
 
 export function MovementFormModal({
@@ -24,18 +26,23 @@ export function MovementFormModal({
     error,
     onSubmit,
     setIsOpen
-}:MovementFormModalProps) {
+}: MovementFormModalProps) {
     const [description, setDescription] = useState('');
     const [amount, setAmount] = useState<number | undefined>();
     const [date, setDate] = useState('');
+    const [type, setType] = useState<MovementType>(MovementType.Expense);
     const [selectedAccountId, setSelectedAccountId] = useState<string>('');
+    const [destinationAccountId, setDestinationAccountId] = useState<string>('');
 
     useEffect(()=> {
         if(isOpen) return;
         setDescription('');
         setAmount(undefined);
         setDate('');
-    },[isOpen]);
+        setType(MovementType.Expense);
+        setSelectedAccountId('');
+        setDestinationAccountId('');
+    }, [isOpen]);
 
     const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
         event.preventDefault();
@@ -43,11 +50,13 @@ export function MovementFormModal({
             description,
             amount: Number(amount),
             date,
-            accountId: selectedAccountId
+            type,
+            accountId: selectedAccountId,
+            destinationAccountId: type === MovementType.Transfer ? destinationAccountId : undefined
         });
     };
 
-    return(
+    return (
         <>
         {isOpen && (
                 <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/50 p-4">
@@ -77,7 +86,7 @@ export function MovementFormModal({
                                 decimalScale={2}
                                 fixedDecimalScale
                                 prefix="R$ "
-                                allowNegative={true}
+                                allowNegative={false}
                                 onValueChange={(values) => {
                                     setAmount(values.floatValue);
                                 }}
@@ -91,6 +100,18 @@ export function MovementFormModal({
                                 type="date"
                                 required
                             />
+
+                            <select
+                                value={type}
+                                onChange={(e) => setType(Number(e.target.value) as MovementType)}
+                                className="w-full rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm text-slate-900 outline-none dark:border-slate-700 dark:bg-slate-900 dark:text-slate-100"
+                                required
+                            >
+                                <option value={MovementType.Expense}>Despesa</option>
+                                <option value={MovementType.Revenue}>Receita</option>
+                                <option value={MovementType.Transfer}>Transferência entre contas</option>
+                                <option value={MovementType.Investment}>Investimento</option>
+                            </select>
                            
                             <select
                                 value={selectedAccountId}
@@ -98,13 +119,32 @@ export function MovementFormModal({
                                 className="w-full rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm text-slate-900 outline-none dark:border-slate-700 dark:bg-slate-900 dark:text-slate-100"
                                 required
                             >
-                                <option value="">Selecione uma conta</option>
+                                <option value="">{type === MovementType.Transfer ? "Selecione a conta de origem" : "Selecione uma conta"}</option>
                                 {accounts.map((account) => (
                                     <option key={account.accountId} value={account.accountId}>
                                         {account.name} ({ BRL(account.balance) })
                                     </option>
                                 ))}
                             </select>
+
+                            {type === MovementType.Transfer && (
+                                <select
+                                    value={destinationAccountId}
+                                    onChange={(e) => setDestinationAccountId(e.target.value)}
+                                    className="w-full rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm text-slate-900 outline-none dark:border-slate-700 dark:bg-slate-900 dark:text-slate-100"
+                                    required
+                                >
+                                    <option value="">Selecione a conta de destino</option>
+                                    {accounts
+                                        .filter((account) => account.accountId !== selectedAccountId)
+                                        .map((account) => (
+                                            <option key={account.accountId} value={account.accountId}>
+                                                {account.name} ({ BRL(account.balance) })
+                                            </option>
+                                        ))}
+                                </select>
+                            )}
+
                             {error && <p className="mt-4 text-sm text-red-500">{error}</p>}
                             <button className="rounded-2xl bg-emerald-500 px-4 py-3 text-sm font-semibold text-white transition hover:bg-emerald-600" type="submit">
                                 Salvar movimentação
