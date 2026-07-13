@@ -94,26 +94,6 @@ if (app.Environment.IsDevelopment())
     app.MapOpenApi();
 }
 
-// if (app.Environment.IsProduction())
-// {
-//     Console.WriteLine("Setting SeqServer On Production");
-//     var seqServer = builder.Configuration[Constants.SeqServer];
-//     if(seqServer is not null)
-//     {
-//         Log.Logger = new LoggerConfiguration()
-//             .WriteTo.Console()
-//             .WriteTo.Seq(seqServer)
-//             .CreateLogger();
-
-//         builder.Host.UseSerilog();
-//     }else
-//     {
-//         Console.ForegroundColor = ConsoleColor.Yellow;
-//         Console.WriteLine("SeqServer não foi configurado!");
-//         Console.ResetColor();
-//     }    
-// }
-
 app.UseExceptionHandler();
 app.UseHttpsRedirection();
 app.UseJwtAuthentication();
@@ -160,5 +140,9 @@ movementsGroup.MapPost("/", (int year, int month, NewAccountMovementDTO movement
     service.CreateNewAsync(user.GetUserName(), year, month, movement));
 movementsGroup.MapDelete("/{movementId}", (Guid movementId, ClaimsPrincipal user, BankAccountMovementService service) =>
     service.DeleteAsync(user.GetUserName(), movementId));
+
+app.MapPost("/bank/movements/v2/{year}/{month}", (int year, int month, NewAccountMovementV2DTO movement, ClaimsPrincipal user, BankAccountMovementService service) =>
+    service.CreateNewV2Async(user.GetUserName(), year, month, movement))
+    .RequireAuthorization();
 
 app.Run();
