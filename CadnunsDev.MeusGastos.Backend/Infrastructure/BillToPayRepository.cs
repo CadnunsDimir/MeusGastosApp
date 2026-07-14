@@ -1,7 +1,3 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 using CadnunsDev.MeusGastos.Backend.Domain.Entities;
 using CadnunsDev.MeusGastos.Backend.Domain.Repositories;
 using CadnunsDev.MeusGastos.Backend.Models.Exceptions;
@@ -32,6 +28,14 @@ public class BillToPayRepository : IBillToPayRepository
             context.Remove(entity);
             await context.SaveChangesAsync();
         }
+    }
+
+    public Task<List<BillToPay>> FindMany(Guid userId, Guid[] billsIds)
+    {
+       return context.BillsToPay
+            .Include(x => x.Category)
+            .Where(x=>x.Category.UserId == userId && billsIds.Contains(x.BillId))
+            .ToListAsync();
     }
 
     public Task<BillToPay> FindOneAsync(Guid userId, Guid bIllId)

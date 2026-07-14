@@ -6,9 +6,8 @@ using Microsoft.Extensions.Logging;
 
 namespace CadnunsDev.MeusGastos.Backend.Domain.Services
 {
-    public class BillToPayService
+    public class BillToPayService : BaseUserService<BillToPayService>
     {
-        private readonly IUserRepository userRepository;
         private readonly IBillToPayRepository billsRepository;
         private readonly IBillCategoryRepository categoryRepository;
         private readonly IUnitOfWork unitOfWork;
@@ -23,9 +22,8 @@ namespace CadnunsDev.MeusGastos.Backend.Domain.Services
             IBankAccountRepository bankAccountRepository,
             IBankAccountMovementRepository movementRepository,
             IUnitOfWork unitOfWork, 
-            ILogger<BillToPayService> logger)
+            ILogger<BillToPayService> logger): base(userRepository, logger)
         {
-            this.userRepository = userRepository;
             this.billsRepository = billsRepository;
             this.categoryRepository = categoryRepository;
             this.unitOfWork = unitOfWork;
@@ -43,14 +41,14 @@ namespace CadnunsDev.MeusGastos.Backend.Domain.Services
 
             await unitOfWork.ExecuteAsync(async () =>
             {
-                var user = await userRepository.GetByUserName(userName) ?? throw new InvalidUserException();
-                logger.LogDebug("Found user with userName={UserName} and userId={UserId}", userName, user.UserId);
+                var userId = await GetUserId(userName);
+                logger.LogDebug("Found user with userName={UserName} and userId={UserId}", userName, userId);
 
                 if (await billsRepository.NotExistsThisBill(year, month, newBill.Description))
                 {
                     logger.LogDebug("No existing bill found for year={Year}, month={Month}, description={BillDescription}", year, month, newBill.Description);
 
-                    var category = await CreateOrGetAsync(user, newBill.Category);
+                    var category = await CreateOrGetAsync(userId, newBill.Category);
                     logger.LogDebug("Using bill category id={CategoryId}, description={CategoryDescription}", category.CategoryId, category.Description);
 
                     var bill = new BillToPay
@@ -82,16 +80,16 @@ namespace CadnunsDev.MeusGastos.Backend.Domain.Services
             return createdBillDto ?? throw new InvalidOperationException("Bill was not created.");
         }
 
-        private async Task<BillCategory> CreateOrGetAsync(User user, string categoryDescription)
+        private async Task<BillCategory> CreateOrGetAsync(Guid userId, string categoryDescription)
         {
-            var category = await categoryRepository.FindByUserIdAndDescription(user.UserId, categoryDescription);
+            var category = await categoryRepository.FindByUserIdAndDescription(userId, categoryDescription);
             if (category is null)
             {
                 category = new BillCategory
                 {
                     CategoryId = Guid.NewGuid(),
                     Description = categoryDescription,
-                    UserId = user.UserId
+                    UserId = userId
                 };
                 await categoryRepository.CreateAsync(category);
             }
@@ -154,13 +152,7 @@ namespace CadnunsDev.MeusGastos.Backend.Domain.Services
             return result;
         }
 
-        private async Task<Guid> GetUserId(string userName)
-        {
-            var user = await userRepository.GetByUserName(userName) ?? throw new InvalidUserException();
-            logger.LogDebug("Found user with userName={UserName} and userId={UserId}", userName, user.UserId);
-            return user.UserId;
-        }
-
+        
         internal async Task DeleteBillAsync(string userName, Guid billId)
         {
             var userId = await GetUserId(userName);
@@ -207,7 +199,8 @@ namespace CadnunsDev.MeusGastos.Backend.Domain.Services
                         Date = payingBillDTO.Date,
                         AccountId = account.AccountId,
                         Value = -bill.Value,
-                        BillId = bill.BillId
+                        BillId = bill.BillId,
+                        Type = Enums.MovementType.Expense
                     };
 
                     bill.IsPaid = true;

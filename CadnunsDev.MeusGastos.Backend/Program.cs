@@ -46,6 +46,7 @@ builder.Services.AddScoped<TokenService>();
 builder.Services.AddScoped<BankAccountService>();
 builder.Services.AddScoped<BillToPayService>();
 builder.Services.AddScoped<BankAccountMovementService>();
+builder.Services.AddScoped<DashboardService>();
 
 builder.Services.AddRateLimiter(options =>
 {
@@ -130,7 +131,8 @@ billsGroup.MapDelete("/{billId}", (Guid billId, ClaimsPrincipal user, BillToPayS
     service.DeleteBillAsync(user.GetUserName(), billId));
 
 app.MapGet("/bank/bills/categories", ([FromQuery(Name = "q")] string query, ClaimsPrincipal user, BillToPayService billToPayService) =>
-    billToPayService.QueryCategories(user.GetUserName(), query));
+    billToPayService.QueryCategories(user.GetUserName(), query))
+    .RequireAuthorization();
 
 var movementsGroup = app.MapGroup("/bank/movements/{year}/{month}")
     .RequireAuthorization();
@@ -143,6 +145,10 @@ movementsGroup.MapDelete("/{movementId}", (Guid movementId, ClaimsPrincipal user
 
 app.MapPost("/bank/movements/v2/{year}/{month}", (int year, int month, NewAccountMovementV2DTO movement, ClaimsPrincipal user, BankAccountMovementService service) =>
     service.CreateNewV2Async(user.GetUserName(), year, month, movement))
+    .RequireAuthorization();
+
+app.MapGet("/bank/dashboard/{year}/{month}", (int year, int month, ClaimsPrincipal user, DashboardService dashboardService)=> 
+    dashboardService.GenerateExpensesCategoriesByMonth(user.GetUserName(),month, year))
     .RequireAuthorization();
 
 app.Run();

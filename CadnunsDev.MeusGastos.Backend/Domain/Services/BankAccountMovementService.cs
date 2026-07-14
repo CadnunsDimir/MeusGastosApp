@@ -50,7 +50,8 @@ namespace CadnunsDev.MeusGastos.Backend.Domain.Services
                     AccountId = movement.AccountId,
                     Description = movement.Description,
                     Value = movement.Value,
-                    Date = movement.Date
+                    Date = movement.Date,
+                    Type = movement.Value >= 0 ? MovementType.Revenue : MovementType.Expense
                 };
                 await movementRepository.CreateAsync(entity);
                 

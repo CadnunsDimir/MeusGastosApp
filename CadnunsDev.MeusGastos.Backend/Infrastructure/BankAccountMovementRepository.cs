@@ -1,8 +1,5 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 using CadnunsDev.MeusGastos.Backend.Domain.Entities;
+using CadnunsDev.MeusGastos.Backend.Domain.Enums;
 using CadnunsDev.MeusGastos.Backend.Domain.Repositories;
 using Microsoft.EntityFrameworkCore;
 
@@ -56,6 +53,24 @@ namespace CadnunsDev.MeusGastos.Backend.Infrastructure
             var start = new DateOnly(year, month, 1);
             var end = start.AddMonths(1);
             return await context.BankAccountMovements.Where(m => accountIds.Contains(m.AccountId) && m.Date >= start && m.Date < end).ToListAsync();
+        }
+
+        public Task<List<BankAccountMovement>> ListByType(Guid userId, int year, int month, MovementType expense)
+        {
+            var query = (
+                from movements in context.BankAccountMovements
+                join accounts in context.BankAccounts
+                on movements.AccountId equals accounts.AccountId
+                where accounts.UserId == userId 
+                    && movements.Date.Year == year 
+                    && movements.Date.Month == month 
+                    && movements.Type == expense
+                select movements
+            );
+
+            return query
+                .AsNoTracking()
+                .ToListAsync();
         }
     }
 }
