@@ -1,5 +1,5 @@
 import { api } from './api';
-import type { BankAccountDTO, BillResponseDTO, CategorySuggestionDTO, MovementDTO, NewBankAccountDTO, NewBillDTO, PayBillDTO, NewAccountMovementV2DTO } from '../types/finance';
+import type { BankAccountDTO, BillResponseDTO, CategorySuggestionDTO, MovementDTO, NewBankAccountDTO, NewBillDTO, PayBillDTO, NewAccountMovementV2DTO, DashboardItemDTO } from '../types/finance';
 
 export async function listAccounts() {
   const response = await api.get<BankAccountDTO[]>('/bank/account');
@@ -64,6 +64,12 @@ export async function searchCategories(query: string) {
       },
     }
   );
+
+  return response.data;
+}
+
+export async function getDashboard(year: number, month: number) {
+  const response = await api.get<DashboardItemDTO[]>(`/bank/dashboard/${year}/${month}`);
 
   return response.data;
 }

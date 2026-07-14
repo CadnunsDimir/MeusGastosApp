@@ -62,3 +62,8 @@ export interface CategorySuggestionDTO {
   categoryId: string;
   description: string;
 }
+
+export interface DashboardItemDTO {
+  category: string,
+	totalSum: number
+}

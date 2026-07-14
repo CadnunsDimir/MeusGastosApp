@@ -2,18 +2,20 @@ import { useEffect, useMemo, useState } from 'react';
 import { ArrowLeft, ArrowRight, DollarSign, Home, Wallet } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
-import { listAccounts, listBills, listMovements } from '../services/finance';
-import type { BankAccountDTO, BillResponseDTO, MovementDTO } from '../types/finance';
+import { getDashboard, listAccounts, listBills, listMovements } from '../services/finance';
+import type { BankAccountDTO, BillResponseDTO, DashboardItemDTO, MovementDTO } from '../types/finance';
 import { formatDateOnly } from '@/services/dates';
 import { MonthSelector } from '@/components/MonthSelector';
 import { PayBillModal } from '@/components/PayBillModal';
 import { BRL } from '@/services/currency';
+import { StatsByCategory } from '@/components/StatsByCategory';
 
 export function Dashboard() {
   const [currentDate, setCurrentDate] = useState(new Date());
   const [accounts, setAccounts] = useState<BankAccountDTO[]>([]);
   const [bills, setBills] = useState<BillResponseDTO[]>([]);
   const [movements, setMovements] = useState<MovementDTO[]>([]);
+  const [stats, setStats] = useState<DashboardItemDTO[]>([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [selectedBill, setSelectedBill] = useState<BillResponseDTO | null>(null);
@@ -29,15 +31,17 @@ export function Dashboard() {
 
     try {
       console.log("[Dashboard] Calling apis");
-      const [accountsResponse, billsResponse, movementsResponse] = await Promise.all([
+      const [accountsResponse, billsResponse, movementsResponse, dashboardResponse] = await Promise.all([
         listAccounts(),
         listBills(year, month),
-        listMovements(year, month)
+        listMovements(year, month),
+        getDashboard(year, month)
       ]);
 
       setAccounts(accountsResponse);
       setBills(billsResponse);
       setMovements(movementsResponse);
+      setStats(dashboardResponse)
     } catch (err) {
       setError('Não foi possível carregar os dados do dashboard. Tente novamente.');
     } finally {
@@ -186,7 +190,7 @@ export function Dashboard() {
               <div className="flex items-center justify-between gap-4">
                 <div>
                   <p className="text-sm uppercase tracking-[0.35em] text-slate-500 dark:text-slate-400">Saldo Total</p>
-                  <p className="mt-3 text-3xl font-semibold text-slate-900 dark:text-slate-100">{ BRL(totalBalance)}</p>
+                  <p className="mt-3 text-3xl font-semibold text-slate-900 dark:text-slate-100">{ BRL(totalBalance) }</p>
                 </div>
                 <div className="rounded-2xl bg-emerald-100 p-3 text-emerald-700 dark:bg-emerald-700/10 dark:text-emerald-200">
                   <DollarSign className="h-6 w-6" />
@@ -280,6 +284,38 @@ export function Dashboard() {
         </div>
 
         <aside className="space-y-6">
+          <StatsByCategory 
+            categories={stats}
+          />
+          <article className="rounded-3xl border border-slate-200 bg-white/90 p-6 shadow-sm dark:border-slate-800 dark:bg-slate-950">
+            <p className="text-sm uppercase tracking-[0.35em] text-slate-500 dark:text-slate-400">Próximas contas</p>
+            <div className="mt-5 space-y-4">
+              {nextBills.length === 0 ? (
+                <div className="rounded-3xl bg-slate-50 p-4 text-sm text-slate-500 dark:bg-slate-900 dark:text-slate-400">Nenhuma conta pendente para este mês.</div>
+              ) : (
+                nextBills.map((bill) => (
+                  <div key={bill.billId} 
+                    onClick={() => showPayBillModal(bill) }
+                  className="flex items-center justify-between gap-4 rounded-3xl bg-slate-50 px-4 py-4 dark:bg-slate-900">
+                    <div>
+                      <p className="font-semibold text-slate-900 dark:text-slate-100">{bill.billDescription}</p>
+                      <p className="text-sm text-slate-500 dark:text-slate-400">Vencimento dia {bill.paymentDay}</p>
+                    </div>
+                    <span className={`rounded-2xl px-3 py-1 text-sm font-semibold ${bill.isPaid ? 'bg-emerald-100 text-emerald-700' : 'bg-red-100 text-red-700'}`}>
+                      {bill.isPaid ? 'Pago' : 'Pendente'}
+                    </span>
+                  </div>
+                ))
+              )}
+            </div>
+            <PayBillModal 
+              accounts={accounts}
+              bill={selectedBill}
+              isOpen={isShowPayBillModal}
+              setIsOpen={setIsShowPayBillModal}
+              onSuccess={()=> fetchDashboardData()}
+            />
+          </article>
           <article className="rounded-3xl border border-slate-200 bg-white/90 p-6 shadow-sm dark:border-slate-800 dark:bg-slate-950">
             <p className="text-sm uppercase tracking-[0.35em] text-slate-500 dark:text-slate-400">Visão geral</p>
             <div className="mt-5 grid gap-4">
@@ -312,35 +348,7 @@ export function Dashboard() {
             </div>
           </article>
 
-          <article className="rounded-3xl border border-slate-200 bg-white/90 p-6 shadow-sm dark:border-slate-800 dark:bg-slate-950">
-            <p className="text-sm uppercase tracking-[0.35em] text-slate-500 dark:text-slate-400">Próximas contas</p>
-            <div className="mt-5 space-y-4">
-              {nextBills.length === 0 ? (
-                <div className="rounded-3xl bg-slate-50 p-4 text-sm text-slate-500 dark:bg-slate-900 dark:text-slate-400">Nenhuma conta pendente para este mês.</div>
-              ) : (
-                nextBills.map((bill) => (
-                  <div key={bill.billId} 
-                    onClick={() => showPayBillModal(bill) }
-                  className="flex items-center justify-between gap-4 rounded-3xl bg-slate-50 px-4 py-4 dark:bg-slate-900">
-                    <div>
-                      <p className="font-semibold text-slate-900 dark:text-slate-100">{bill.billDescription}</p>
-                      <p className="text-sm text-slate-500 dark:text-slate-400">Vencimento dia {bill.paymentDay}</p>
-                    </div>
-                    <span className={`rounded-2xl px-3 py-1 text-sm font-semibold ${bill.isPaid ? 'bg-emerald-100 text-emerald-700' : 'bg-red-100 text-red-700'}`}>
-                      {bill.isPaid ? 'Pago' : 'Pendente'}
-                    </span>
-                  </div>
-                ))
-              )}
-            </div>
-            <PayBillModal 
-              accounts={accounts}
-              bill={selectedBill}
-              isOpen={isShowPayBillModal}
-              setIsOpen={setIsShowPayBillModal}
-              onSuccess={()=> fetchDashboardData()}
-            />
-          </article>
+          
         </aside>
       </section>
     </div>
