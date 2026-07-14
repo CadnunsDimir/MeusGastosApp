@@ -26,14 +26,16 @@ namespace CadnunsDev.MeusGastos.Backend.Domain.Services
             var expensesWithCategory = await GetCategories(userId, generalExpenses);
             var investiments = await _movementRepository.ListByType(userId, year, month, MovementType.Investment);
 
-            return [
-                new ()
+            List<DashboardItemDTO> list = [
+                new DashboardItemDTO
                 {
                     Category = "Investimentos",
                     TotalSum = -investiments.Sum(x=>x.Value)
                 },
                 ..expensesWithCategory
             ];
+
+            return list.Where(x=> x.TotalSum > 0).ToList();
         }
 
         private async Task<List<DashboardItemDTO>> GetCategories(Guid userId, List<BankAccountMovement> generalExpenses)
