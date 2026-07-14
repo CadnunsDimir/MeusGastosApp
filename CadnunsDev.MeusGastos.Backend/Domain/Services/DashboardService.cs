@@ -41,15 +41,18 @@ namespace CadnunsDev.MeusGastos.Backend.Domain.Services
         private async Task<List<DashboardItemDTO>> GetCategories(Guid userId, List<BankAccountMovement> generalExpenses)
         {
             var billsIds = generalExpenses
-                .Where(x=>x.BillId.HasValue)
-                .Select(x=> x.BillId.Value)
+                .Select(x => x.BillId)
+                .Where(id => id != null)
+                .Select(id => id!.Value)
                 .Distinct()
                 .ToArray();
 
             var bills = await _billToPayRepository.FindMany(userId, billsIds);
+
+            var billsDict = bills.ToDictionary(b => b.BillId);
             
             return generalExpenses
-                .Select(movement => CheckIfHasABillAsync(movement, bills))
+                .Select(movement => CheckIfHasABill(movement, billsDict))
                 .GroupBy(x=>x.Category)
                 .Select(x=> new DashboardItemDTO
                 {
@@ -59,22 +62,20 @@ namespace CadnunsDev.MeusGastos.Backend.Domain.Services
                 .ToList();
         }
 
-        private DashboardItemDTO CheckIfHasABillAsync(BankAccountMovement movement, List<BillToPay> bills)
+        private DashboardItemDTO CheckIfHasABill(BankAccountMovement movement, Dictionary<Guid, BillToPay> billsDict)
         {
             var response = new DashboardItemDTO
-                {
-                    Category = "Outros",
-                    TotalSum = -movement.Value
-                };
+            {
+                Category = "Outros",
+                TotalSum = -movement.Value
+            };
 
-                
-                if (movement.BillId != null)
-                {
-                    var bill = bills.First(x=>x.BillId == movement.BillId);
-                    response.Category = bill.Category.Description;
-                }
+            if (movement.BillId.HasValue && billsDict.TryGetValue(movement.BillId.Value, out var bill))
+            {
+                response.Category = bill.Category.Description;
+            }
 
-                return response;
+            return response;
         }
     }
 }

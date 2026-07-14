@@ -151,7 +151,6 @@ namespace CadnunsDev.MeusGastos.Backend.Domain.Services
             logger.LogDebug("ListAsync response data: {@BillResponseList}", result);
             return result;
         }
-
         
         internal async Task DeleteBillAsync(string userName, Guid billId)
         {
