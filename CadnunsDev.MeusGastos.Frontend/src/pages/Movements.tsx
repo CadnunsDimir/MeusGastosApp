@@ -166,7 +166,7 @@ export function Movements() {
 
             {error && <p className="mt-4 text-sm text-red-500">{error}</p>}
 
-            <div className="mt-6 rounded-3xl border border-slate-200 bg-white/90 shadow-sm dark:border-slate-800 dark:bg-slate-950">
+            <div className="mt-6 border border-slate-200 bg-white/90 shadow-sm dark:border-slate-800 dark:bg-slate-950">
                 <div className="overflow-x-auto">
                     <table className="min-w-full divide-y divide-slate-200 text-left text-sm dark:divide-slate-800">
                         <thead className="bg-slate-50 text-slate-500 uppercase tracking-[0.2em] dark:bg-slate-900 dark:text-slate-400 rounded-t-3xl">
