@@ -184,7 +184,7 @@ export function Dashboard() {
       )}
 
       <section className="grid gap-6 xl:grid-cols-[1.5fr_1fr]">
-        <div className="space-y-6">
+        <div className="space-y-6 min-w-0">
           <div className="grid gap-6 md:grid-cols-2 xl:grid-cols-2">
             <article className="rounded-3xl border border-slate-200 bg-white/90 p-6 shadow-sm dark:border-slate-800 dark:bg-slate-950">
               <div className="flex items-center justify-between gap-4">

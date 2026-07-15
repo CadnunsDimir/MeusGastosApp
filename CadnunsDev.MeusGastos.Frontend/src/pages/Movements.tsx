@@ -7,7 +7,7 @@ import { MonthSelector } from '@/components/MonthSelector';
 import { MovementFormFields, MovementFormModal } from '@/components/MovementFormModal';
 import { BRL } from '@/services/currency';
 
-interface MovementMonth{
+interface MovementMonth {
     month: number,
     year: number
 }
@@ -15,11 +15,11 @@ interface MovementMonth{
 export function Movements() {
     const [accounts, setAccounts] = useState<BankAccountDTO[]>([]);
     const [movements, setMovements] = useState<MovementDTO[]>([]);
-    const [isOpen, setIsOpen] = useState(false);    
-    const [movementMonth, setMovementMonth] = useState<MovementMonth>((()=> {
+    const [isOpen, setIsOpen] = useState(false);
+    const [movementMonth, setMovementMonth] = useState<MovementMonth>((() => {
         var todayDate = new Date();
         return {
-            month: todayDate.getMonth()+ 1,
+            month: todayDate.getMonth() + 1,
             year: todayDate.getFullYear()
         }
     })());
@@ -48,16 +48,16 @@ export function Movements() {
         }
     }
 
-    
+
 
     const handleDelete = async (event: React.MouseEvent<HTMLButtonElement>, id?: string) => {
         try {
             setLoading(true);
             const movementToDelete = movements.find(x => x.movementId === id);
             await deleteMovement(movementMonth.year, movementMonth.month, id ?? "");
-            
-            setMovements((current) => current.filter(x => 
-                x.movementId !== id && 
+
+            setMovements((current) => current.filter(x =>
+                x.movementId !== id &&
                 (movementToDelete?.relatedMovementId ? x.movementId !== movementToDelete.relatedMovementId : true)
             ));
 
@@ -66,7 +66,7 @@ export function Movements() {
             setLoading(false);
         } catch {
             setError("Ocorreu um erro ao remover movimento")
-        }        
+        }
     }
 
     function toDate(month: MovementMonth) {
@@ -166,63 +166,65 @@ export function Movements() {
 
             {error && <p className="mt-4 text-sm text-red-500">{error}</p>}
 
-            <div className="mt-6 overflow-hidden rounded-3xl border border-slate-200 bg-white/90 shadow-sm dark:border-slate-800 dark:bg-slate-950">
-                <table className="min-w-full divide-y divide-slate-200 text-left text-sm dark:divide-slate-800">
-                    <thead className="bg-slate-50 text-slate-500 uppercase tracking-[0.2em] dark:bg-slate-900 dark:text-slate-400">
-                        <tr>
-                            <th className="px-4 py-3">Descrição</th>
-                            <th className="px-4 py-3">Data</th>
-                            <th className="px-4 py-3 text-right">Valor</th>
-                            <th className="px-4 py-3 text-right">Ações</th>
-                        </tr>
-                    </thead>
-                    <tbody className="divide-y divide-slate-100 dark:divide-slate-800">
-                        {
-                            loading ? (
-                                <tr>
-                                    <td colSpan={3} className="px-4 py-8 text-center text-slate-500 dark:text-slate-400">
-                                    Carregando movimentos...
-                                    </td>
-                                </tr>
-                            ) : movements.length === 0 ? (
+            <div className="mt-6 rounded-3xl border border-slate-200 bg-white/90 shadow-sm dark:border-slate-800 dark:bg-slate-950">
+                <div className="overflow-x-auto">
+                    <table className="min-w-full divide-y divide-slate-200 text-left text-sm dark:divide-slate-800">
+                        <thead className="bg-slate-50 text-slate-500 uppercase tracking-[0.2em] dark:bg-slate-900 dark:text-slate-400 rounded-t-3xl">
                             <tr>
-                                <td colSpan={3} className="px-4 py-8 text-center text-slate-500 dark:text-slate-400">
-                                Nenhum movimento cadastrado ainda.
-                                </td>
+                                <th className="px-4 py-3">Descrição</th>
+                                <th className="px-4 py-3">Data</th>
+                                <th className="px-4 py-3 text-right">Valor</th>
+                                <th className="px-4 py-3 text-right">Ações</th>
                             </tr>
-                            ) : (
-                                movements.map((movement) => (
-                                    <tr key={movement.movementId} className="hover:bg-slate-50 dark:hover:bg-slate-900/80">
-                                        <td className="px-4 py-4 text-slate-900 dark:text-slate-100">
-                                            {movement.description}
-                                            {renderTypeBadge(movement.type)}
-                                        </td>
-                                        <td className="px-4 py-4 text-slate-500 dark:text-slate-400">{formatDateOnly(movement.date)}</td>
-                                        <td className={`px-4 py-4 text-right font-semibold ${movement.value >= 0 ? 'text-emerald-600' : 'text-red-500'}`}>
-                                            {BRL(Math.abs(movement.value))}
-                                        </td>
-                                        <td className="px-4 py-4 text-right text-slate-500 dark:text-slate-400">
-                                            <button className="mr-3 inline-flex items-center gap-1 text-slate-600 hover:text-slate-900 dark:text-slate-300 dark:hover:text-slate-100">
-                                                <Pencil className="h-4 w-4" /> Editar
-                                            </button>
-                                            <button 
-                                                onClick={event => handleDelete(event, movement.movementId)}
-                                                className="inline-flex items-center gap-1 text-red-500 hover:text-red-600">
-                                                <Trash2 className="h-4 w-4" /> Excluir
-                                            </button>
+                        </thead>
+                        <tbody className="divide-y divide-slate-100 dark:divide-slate-800">
+                            {
+                                loading ? (
+                                    <tr>
+                                        <td colSpan={3} className="px-4 py-8 text-center text-slate-500 dark:text-slate-400">
+                                            Carregando movimentos...
                                         </td>
                                     </tr>
-                                ))
-                            )
-                        }
-                    </tbody>
-                </table>
-            </div>            
+                                ) : movements.length === 0 ? (
+                                    <tr>
+                                        <td colSpan={3} className="px-4 py-8 text-center text-slate-500 dark:text-slate-400">
+                                            Nenhum movimento cadastrado ainda.
+                                        </td>
+                                    </tr>
+                                ) : (
+                                    movements.map((movement) => (
+                                        <tr key={movement.movementId} className="hover:bg-slate-50 dark:hover:bg-slate-900/80">
+                                            <td className="px-4 py-4 text-slate-900 dark:text-slate-100">
+                                                {movement.description}
+                                                {renderTypeBadge(movement.type)}
+                                            </td>
+                                            <td className="px-4 py-4 text-slate-500 dark:text-slate-400">{formatDateOnly(movement.date)}</td>
+                                            <td className={`px-4 py-4 text-right font-semibold ${movement.value >= 0 ? 'text-emerald-600' : 'text-red-500'}`}>
+                                                {BRL(Math.abs(movement.value))}
+                                            </td>
+                                            <td className="px-4 py-4 text-right text-slate-500 dark:text-slate-400">
+                                                <button className="mr-3 inline-flex items-center gap-1 text-slate-600 hover:text-slate-900 dark:text-slate-300 dark:hover:text-slate-100">
+                                                    <Pencil className="h-4 w-4" /> Editar
+                                                </button>
+                                                <button
+                                                    onClick={event => handleDelete(event, movement.movementId)}
+                                                    className="inline-flex items-center gap-1 text-red-500 hover:text-red-600">
+                                                    <Trash2 className="h-4 w-4" /> Excluir
+                                                </button>
+                                            </td>
+                                        </tr>
+                                    ))
+                                )
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            </div>
 
-            <MovementFormModal 
-                isOpen={isOpen} 
-                accounts={accounts} 
-                error={error} 
+            <MovementFormModal
+                isOpen={isOpen}
+                accounts={accounts}
+                error={error}
                 setIsOpen={setIsOpen} onSubmit={handleSubmit} />
         </div>
     );
