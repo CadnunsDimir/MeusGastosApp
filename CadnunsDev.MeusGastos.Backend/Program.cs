@@ -47,6 +47,7 @@ builder.Services.AddScoped<BankAccountService>();
 builder.Services.AddScoped<BillToPayService>();
 builder.Services.AddScoped<BankAccountMovementService>();
 builder.Services.AddScoped<DashboardService>();
+builder.Services.AddScoped<UserProfileService>();
 
 builder.Services.AddRateLimiter(options =>
 {
@@ -100,15 +101,21 @@ app.UseHttpsRedirection();
 app.UseJwtAuthentication();
 await app.ApplyDBMigrationsAsync();
 
-//Testes de health e login
+//Testes de health
 app.MapGet("/ok", () => "OK" );
-app.MapGet("/profile", () => "Profile" ).RequireAuthorization();
 
 var auth = app.MapGroup("/auth");
 auth.MapPost("/newuser", (NewUserService service, NewUserRequestDTO newUserRequest) => service.Create(newUserRequest));
 auth.MapPost("/login", (LoginRequestDTO loginRequest, LoginService service) => service.Login(loginRequest)).RequireRateLimiting("api");
 auth.MapPost("/refresh", (RefreshRequestDTO request, LoginService service) => service.RefreshToken(request));
 auth.MapPost("/logout", (RefreshRequestDTO request, LoginService service) => service.Logout(request)).RequireAuthorization();
+
+var profileGroup = app.MapGroup("/profile")
+    .RequireAuthorization();
+profileGroup.MapGet("/", (ClaimsPrincipal user, UserProfileService service) =>
+    service.GetProfileAsync(user.GetUserId()));
+profileGroup.MapPut("/", (ClaimsPrincipal user, UpdateProfileRequestDTO request, UserProfileService service) =>
+    service.UpdateProfileAsync(user.GetUserId(), request));
 
 var bankAcountGroup = app.MapGroup("/bank/account")
     .RequireAuthorization();

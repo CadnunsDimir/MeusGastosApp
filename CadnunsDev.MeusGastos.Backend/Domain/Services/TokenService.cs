@@ -66,6 +66,7 @@ namespace CadnunsDev.MeusGastos.Backend.Domain.Services
         {
             var list = new List<Claim>(){
                 new ("UserName", user.UserName),
+                new ("UserId", user.UserId.ToString()),
                 new (ClaimTypes.Email, user.Email ?? string.Empty),
             };
 

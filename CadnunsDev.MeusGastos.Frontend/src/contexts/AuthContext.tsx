@@ -1,11 +1,13 @@
 import { createContext, useContext, useEffect, useMemo, useState, ReactNode } from 'react';
 import { api, setApiAuthorizationHeader } from '../services/api';
+import { getProfile } from '@/services/profile';
 
 interface AuthState {
     user: { id: string; name: string } | null;
     token: string | null;
     refreshToken: string | null;
     isAuthenticated: boolean;
+    firstName: string | null;
 }
 
 interface LoginPayload {
@@ -34,6 +36,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         token: localStorage.getItem('accessToken'),
         refreshToken: localStorage.getItem('refreshToken'),
         isAuthenticated: Boolean(localStorage.getItem('accessToken')),
+        firstName: null,
     }));
     const [isInitialized, setIsInitialized] = useState(false);
 
@@ -46,6 +49,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
         localStorage.setItem("accessToken", data.accessToken);
         localStorage.setItem("refreshToken", data.refreshToken);
+        setState(prev => ({ ...prev, firstName: data.firstName }));
 
         return data.accessToken;
     }
@@ -62,6 +66,14 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         setIsInitialized(true);
         console.log("🔧IsInitialized = true");
     }, []);
+
+    useEffect(()=> {
+        var getFirstName = async ()=>{
+            var profile = await getProfile();
+            setState(prev => ({ ...prev, firstName: profile.firstName }));
+        }
+        getFirstName();
+    },[])
 
     useEffect(() => {
         setApiAuthorizationHeader(state.token);
@@ -114,12 +126,12 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
     const login = async ({ userName, password }: LoginPayload) => {
         const response = await api.post('/auth/login', { userName, password });
-        const { user, accessToken, refreshToken } = response.data;
+        const { user, accessToken, refreshToken, firstName } = response.data;
 
         localStorage.setItem('accessToken', accessToken);
         localStorage.setItem('refreshToken', refreshToken);
 
-        setState({ user, token: accessToken, refreshToken, isAuthenticated: true });
+        setState({ user, token: accessToken, refreshToken, isAuthenticated: true, firstName });
         setApiAuthorizationHeader(accessToken);
     };
 
@@ -132,7 +144,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         localStorage.removeItem('accessToken');
         localStorage.removeItem('refreshToken');
         setApiAuthorizationHeader(null);
-        setState({ user: null, token: null, refreshToken: null, isAuthenticated: false });
+        setState({ user: null, token: null, refreshToken: null, isAuthenticated: false, firstName: null });
     };
 
     const toggleTheme = () => {

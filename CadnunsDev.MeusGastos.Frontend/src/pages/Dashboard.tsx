@@ -20,7 +20,7 @@ export function Dashboard() {
   const [error, setError] = useState<string | null>(null);
   const [selectedBill, setSelectedBill] = useState<BillResponseDTO | null>(null);
   const [isShowPayBillModal, setIsShowPayBillModal] = useState<boolean>(false);
-  const { user, logout, toggleTheme } = useAuth();
+  const { logout, toggleTheme, firstName } = useAuth();
 
   async function fetchDashboardData() {
     setLoading(true);
@@ -138,7 +138,7 @@ export function Dashboard() {
         <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
           <div>
             <p className="text-sm font-semibold uppercase tracking-[0.35em] text-slate-500 dark:text-slate-400">Dashboard</p>
-            <h1 className="mt-3 text-3xl font-semibold text-slate-900 dark:text-slate-100">Olá, {user?.name || 'usuário'}</h1>
+            <h1 className="mt-3 text-3xl font-semibold text-slate-900 dark:text-slate-100">Olá, {firstName || 'usuário'}</h1>
             <p className="mt-2 text-slate-500 dark:text-slate-400">Veja seu fluxo financeiro e acompanhe contas, movimentações e saldos.</p>
           </div>
 
@@ -166,6 +166,12 @@ export function Dashboard() {
               className="inline-flex items-center gap-2 rounded-2xl border border-slate-200 bg-white px-4 py-2 text-sm font-semibold text-slate-900 transition hover:border-slate-300 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-100"
             >
               Movimentações
+            </Link>
+            <Link
+              to="/profile"
+              className="inline-flex items-center gap-2 rounded-2xl border border-slate-200 bg-white px-4 py-2 text-sm font-semibold text-slate-900 transition hover:border-slate-300 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-100"
+            >
+              Perfil
             </Link>
             <button
               onClick={logout}

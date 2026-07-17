@@ -30,9 +30,31 @@ Este arquivo contém as instruções, padrões arquiteturais e regras tecnológi
 2. **Banco de Dados**:
    - Sempre utilize o EF Core e gere novas Migrations com `dotnet ef migrations add <Nome>` ao alterar entidades.
    - As migrações são aplicadas automaticamente na inicialização via `app.ApplyDBMigrationsAsync()`.
-3. **Padrão de Repositórios & Unit of Work**:
-   - Utilize a abstração `IUnitOfWork` para persistir alterações ao final de requisições de escrita.
-   - Injete os repositórios correspondentes no construtor dos serviços (`Services`).
+3. **Padrão de Repositórios (Hexagonal Simplificado)**:
+   - **Regra crítica**: Serviços (`Domain/Services`) acessam dados **APENAS** através de interfaces de repositório (`IUserRepository`, `IBankAccountRepository`, etc.). Nunca injete `AppDbContext` em serviços.
+   - **Responsabilidades**:
+     - **Services**: lógica de negócio, chama métodos dos repositórios
+     - **Repository interfaces** (`Domain/Repositories/I*.cs`): definem operações (Get, Create, Update, Delete, etc.)
+     - **Repository implementations** (`Infrastructure/*.cs`): implementam persistência, incluindo `SaveChangesAsync()` dentro de cada operação
+   - **Exemplo correto**:
+     ```csharp
+     // ✅ CORRETO
+     public class UserProfileService
+     {
+         private readonly IUserRepository userRepository;
+         public UserProfileService(IUserRepository userRepository) { ... }
+         public async Task UpdateAsync(User user) => await userRepository.UpdateAsync(user);
+     }
+     ```
+   - **Exemplo errado**:
+     ```csharp
+     // ❌ ERRADO - não faça isso
+     public class UserProfileService
+     {
+         private readonly AppDbContext dbContext; // NUNCA!
+         public UserProfileService(AppDbContext dbContext) { ... }
+     }
+     ```
 4. **Segurança**:
    - Endpoints privados devem requerer autorização via `.RequireAuthorization()`.
    - Obtenha informações do usuário autenticado a partir do `ClaimsPrincipal` injetado usando métodos de extensão como `GetUserName()`.

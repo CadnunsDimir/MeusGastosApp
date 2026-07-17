@@ -38,4 +38,10 @@ public class UserRepository : IUserRepository
     {
         return !await context.Users.AnyAsync(u => u.UserName == userName);
     }
+
+    public async Task UpdateAsync(User user)
+    {
+        context.Users.Update(user);
+        await context.SaveChangesAsync();
+    }
 }

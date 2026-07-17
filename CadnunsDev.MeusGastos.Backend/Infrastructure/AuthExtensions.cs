@@ -41,5 +41,14 @@ namespace CadnunsDev.MeusGastos.Backend.Infrastructure
         {
             return user.FindFirstValue("UserName") ?? throw new NullReferenceException("UserName não presente no JWT");
         }
+
+        public static Guid GetUserId(this ClaimsPrincipal user)
+        {
+            var userIdString = user.FindFirstValue("UserId");
+            if (string.IsNullOrEmpty(userIdString))
+                throw new NullReferenceException("UserId não presente no JWT");
+
+            return Guid.Parse(userIdString);
+        }
     }
 }
