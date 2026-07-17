@@ -1,3 +1,5 @@
 .env
 .env.prd
 *.local.md
+.claude/*.local.json
+.claude/*.lock
