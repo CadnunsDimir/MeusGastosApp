@@ -159,16 +159,16 @@ export function Movements() {
                         onClick={() => setIsOpen(true)}
                         className="inline-flex items-center gap-2 rounded-2xl bg-emerald-500 px-5 py-3 text-sm font-semibold text-white transition hover:bg-emerald-600"
                     >
-                        <Plus className="h-4 w-4" /> Nova fatura
+                        <Plus className="h-4 w-4" /> Adicionar
                     </button>
                 </div>
             </div>
 
             {error && <p className="mt-4 text-sm text-red-500">{error}</p>}
 
-            <div className="mt-6 border border-slate-200 bg-white/90 shadow-sm dark:border-slate-800 dark:bg-slate-950">
-                <div className="overflow-x-auto">
-                    <table className="min-w-full divide-y divide-slate-200 text-left text-sm dark:divide-slate-800">
+            <div className="mt-6 border border-slate-200 bg-white/90 shadow-sm dark:border-slate-800 dark:bg-slate-950 rounded-2xl">
+                <div className="overflow-x-auto rounded-2xl">
+                    <table className="min-w-full divide-y divide-slate-200 text-left text-sm dark:divide-slate-800 rounded-2xl">
                         <thead className="bg-slate-50 text-slate-500 uppercase tracking-[0.2em] dark:bg-slate-900 dark:text-slate-400 rounded-t-3xl">
                             <tr>
                                 <th className="px-4 py-3">Descrição</th>
