@@ -1,11 +1,13 @@
 import { useEffect, useState } from 'react';
-import { Plus, Trash2 } from 'lucide-react';
+import { ArrowLeft, Plus, Trash2 } from 'lucide-react';
 import { createAccount, deleteAccount, listAccounts } from '../services/finance';
 import type { BankAccountDTO, NewBankAccountDTO } from '../types/finance';
 import { BRL } from '@/services/currency';
 import { NumericFormat } from 'react-number-format';
+import { useNavigate } from 'react-router-dom';
 
 export function Accounts() {
+  const navigate = useNavigate();
   const [accounts, setAccounts] = useState<BankAccountDTO[]>([]);
   const [isOpen, setIsOpen] = useState(false);
   const [bankName, setBankName] = useState('');
@@ -75,9 +77,17 @@ export function Accounts() {
   return (
     <div className="mx-auto max-w-7xl px-4 py-6 sm:px-6 lg:px-8">
       <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
-        <div>
-          <p className="text-sm uppercase tracking-[0.35em] text-slate-500 dark:text-slate-400">Contas / Bancos</p>
-          <h1 className="mt-2 text-3xl font-semibold text-slate-900 dark:text-slate-100">Gerencie suas contas bancárias</h1>
+        <div className="flex flex-nowrap items-center gap-5">
+          <button
+            onClick={() => navigate('/')}
+            className="inline-flex items-center gap-2 rounded-2xl border border-slate-200 bg-slate-50 px-3 py-2 text-slate-700 transition hover:border-slate-300 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-200"
+          >
+            <ArrowLeft className="h-4 w-4" />
+          </button>
+          <div>
+            <p className="text-sm uppercase tracking-[0.35em] text-slate-500 dark:text-slate-400">Contas / Bancos</p>
+            <h1 className="mt-2 text-3xl font-semibold text-slate-900 dark:text-slate-100">Gerencie suas contas bancárias</h1>
+          </div>
         </div>
         <button
           onClick={() => setIsOpen(true)}

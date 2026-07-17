@@ -1,12 +1,14 @@
 import { useEffect, useRef, useState } from 'react';
-import { Plus, Trash2 } from 'lucide-react';
+import { ArrowLeft, Plus, Trash2 } from 'lucide-react';
 import { createBill, deleteBill, listBills, searchCategories } from '../services/finance';
 import type { BillResponseDTO, CategorySuggestionDTO, NewBillDTO } from '../types/finance';
 import { MonthSelector } from '@/components/MonthSelector';
 import { NumericFormat } from 'react-number-format';
 import { BRL } from '@/services/currency';
+import { useNavigate } from 'react-router-dom';
 
 export function Bills() {
+  const navigate = useNavigate();
   const today = new Date();
   const [bills, setBills] = useState<BillResponseDTO[]>([]);
   const [isOpen, setIsOpen] = useState(false);
@@ -140,9 +142,17 @@ export function Bills() {
   return (
     <div className="mx-auto max-w-7xl px-4 py-6 sm:px-6 lg:px-8">
       <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
-        <div>
-          <p className="text-sm uppercase tracking-[0.35em] text-slate-500 dark:text-slate-400">Contas a pagar</p>
-          <h1 className="mt-2 text-3xl font-semibold text-slate-900 dark:text-slate-100">Gerencie suas faturas</h1>
+        <div className="flex flex-nowrap items-center gap-5">
+          <button
+            onClick={() => navigate('/')}
+            className="inline-flex items-center gap-2 rounded-2xl border border-slate-200 bg-slate-50 px-3 py-2 text-slate-700 transition hover:border-slate-300 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-200"
+          >
+            <ArrowLeft className="h-4 w-4" />
+          </button>
+          <div>
+            <p className="text-sm uppercase tracking-[0.35em] text-slate-500 dark:text-slate-400">Contas a pagar</p>
+            <h1 className="mt-2 text-3xl font-semibold text-slate-900 dark:text-slate-100">Gerencie suas faturas</h1>
+          </div>
         </div>
         <div className="flex flex-wrap items-center gap-3">
           <MonthSelector
