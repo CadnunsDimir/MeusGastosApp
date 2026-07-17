@@ -1,6 +1,7 @@
 import { createContext, useContext, useEffect, useMemo, useState, ReactNode } from 'react';
 import { api, setApiAuthorizationHeader } from '../services/api';
 import { getProfile } from '@/services/profile';
+import { logoutApi } from '@/services/auth-api';
 
 interface AuthState {
     user: { id: string; name: string } | null;
@@ -141,10 +142,18 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     };
 
     const logout = () => {
+        try{
+            logoutApi({
+                refreshToken: localStorage.getItem("refreshToken") ?? ""
+            });
+        } catch (e){
+            console.warn(e);
+        }
+
         localStorage.removeItem('accessToken');
         localStorage.removeItem('refreshToken');
         setApiAuthorizationHeader(null);
-        setState({ user: null, token: null, refreshToken: null, isAuthenticated: false, firstName: null });
+        setState({ user: null, token: null, refreshToken: null, isAuthenticated: false, firstName: null });        
     };
 
     const toggleTheme = () => {

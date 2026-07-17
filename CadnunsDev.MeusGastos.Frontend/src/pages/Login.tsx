@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
 import { Lock, Mail } from 'lucide-react';
+import { LogoMark } from '@/components/LogoMark';
 
 export function Login() {
   const [userName, setUserName] = useState('');
@@ -18,7 +19,7 @@ export function Login() {
 
     try {
       await login({ userName, password });
-      navigate('/');
+      navigate('/dashboard');
     } catch (err) {
       setError('Usuário ou senha inválidos.');
     } finally {
@@ -29,7 +30,10 @@ export function Login() {
   return (
     <div>
       <div className="mb-8 text-center">
-        <p className="text-sm uppercase tracking-[0.3em] text-slate-500 dark:text-slate-400">Meus Gastos</p>
+        <div className="flex items-center gap-2 justify-center scale-150 pt-7 pb-7">
+          <LogoMark />
+          <span className="font-display text-lg tracking-tight">MeusGastos</span>
+        </div>
         <h1 className="mt-4 text-3xl font-semibold text-slate-900 dark:text-slate-100">Bem-vindo de volta</h1>
         <p className="mt-2 text-slate-500 dark:text-slate-400">Acesse sua conta para ver suas finanças.</p>
       </div>
@@ -70,7 +74,7 @@ export function Login() {
 
         <button
           type="submit"
-          className="w-full rounded-2xl bg-slate-900 px-5 py-3 text-sm font-semibold text-white transition hover:bg-slate-800 disabled:cursor-not-allowed disabled:opacity-60"
+          className="w-full rounded-full bg-slate-900 px-5 py-3 text-sm font-semibold text-white transition hover:bg-slate-800 disabled:cursor-not-allowed disabled:opacity-60"
           disabled={loading}
         >
           {loading ? 'Entrando...' : 'Entrar'}

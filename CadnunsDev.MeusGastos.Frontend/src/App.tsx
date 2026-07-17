@@ -4,6 +4,7 @@ import { Route, Routes, Navigate } from 'react-router-dom';
 import { AuthLayout } from './components/AuthLayout';
 import { ProtectedRoute } from './components/ProtectedRoute';
 import { PageLoader } from './components/PageLoader';
+import Home from './pages/Home';
 
 const Login = lazy(() => import('./pages/Login').then(m => ({ default: m.Login })));
 const Register = lazy(() => import('./pages/Register').then(m => ({ default: m.Register })));
@@ -18,14 +19,15 @@ function App() {
     <div className="min-h-screen bg-slate-50 text-slate-900 dark:bg-slate-950 dark:text-slate-100">
       <Suspense fallback={<PageLoader />}>
         <Routes>
+          <Route path="/" element={<Home></Home>} />
           <Route path="/login" element={<AuthLayout><Login /></AuthLayout>} />
           <Route path="/register" element={<AuthLayout><Register /></AuthLayout>} />
-          <Route path="/" element={<ProtectedRoute><Dashboard /></ProtectedRoute>} />
+          <Route path="/dashboard" element={<ProtectedRoute><Dashboard /></ProtectedRoute>} />
           <Route path="/movements" element={<ProtectedRoute><Movements /></ProtectedRoute>} />
           <Route path="/accounts" element={<ProtectedRoute><Accounts /></ProtectedRoute>} />
           <Route path="/bills" element={<ProtectedRoute><Bills /></ProtectedRoute>} />
           <Route path="/profile" element={<ProtectedRoute><Profile /></ProtectedRoute>} />
-          <Route path="*" element={<Navigate to="/" replace />} />
+          <Route path="*" element={<Navigate to="/dashboard" replace />} />
         </Routes>
       </Suspense>
     </div>

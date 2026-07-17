@@ -54,7 +54,7 @@ export function Profile() {
       setSaving(true);
       await updateProfile(formData);
       setSuccess('Perfil atualizado com sucesso!');
-      setTimeout(() => navigate('/'), 2000);
+      setTimeout(() => navigate('/dashboard'), 2000);
     } catch (err) {
       setError('Erro ao atualizar perfil. Tente novamente.');
       console.error(err);
@@ -75,7 +75,7 @@ export function Profile() {
     <div className="mx-auto flex max-w-2xl flex-col gap-6 px-4 py-6 sm:px-6 lg:px-8">
       <header className="flex items-center gap-3 rounded-3xl border border-slate-200 bg-white/90 p-6 shadow-sm dark:border-slate-800 dark:bg-slate-950">
         <button
-          onClick={() => navigate('/')}
+          onClick={() => navigate('/dashboard')}
           className="inline-flex items-center gap-2 rounded-2xl border border-slate-200 bg-slate-50 px-3 py-2 text-slate-700 transition hover:border-slate-300 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-200"
         >
           <ArrowLeft className="h-4 w-4" />
@@ -169,7 +169,7 @@ export function Profile() {
           </button>
           <button
             type="button"
-            onClick={() => navigate('/')}
+            onClick={() => navigate('/dashboard')}
             className="rounded-lg border border-slate-300 px-4 py-2 text-sm font-semibold text-slate-900 transition hover:border-slate-400 dark:border-slate-600 dark:text-slate-100 dark:hover:border-slate-500"
           >
             Cancelar

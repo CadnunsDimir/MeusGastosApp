@@ -150,7 +150,7 @@ export function Movements() {
             <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
                 <div className="flex flex-nowrap items-center gap-5">
                     <button
-                        onClick={() => navigate('/')}
+                        onClick={() => navigate('/dashboard')}
                         className="inline-flex items-center gap-2 rounded-2xl border border-slate-200 bg-slate-50 px-3 py-2 text-slate-700 transition hover:border-slate-300 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-200"
                     >
                         <ArrowLeft className="h-4 w-4" />

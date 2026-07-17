@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
 import { UserPlus, Mail, Lock } from 'lucide-react';
+import { LogoMark } from '@/components/LogoMark';
 
 export function Register() {
   const [userName, setUserName] = useState('');
@@ -18,7 +19,7 @@ export function Register() {
 
     try {
       await register({ userName, password });
-      navigate('/');
+      navigate('/dashboard');
     } catch (err) {
       setError('Não foi possível criar a conta.');
     } finally {
@@ -29,7 +30,10 @@ export function Register() {
   return (
     <div>
       <div className="mb-8 text-center">
-        <p className="text-sm uppercase tracking-[0.3em] text-slate-500 dark:text-slate-400">Meus Gastos</p>
+        <div className="flex items-center gap-2 justify-center scale-150 pt-7 pb-7">
+          <LogoMark />
+          <span className="font-display text-lg tracking-tight">MeusGastos</span>
+        </div>
         <h1 className="mt-4 text-3xl font-semibold text-slate-900 dark:text-slate-100">Crie sua conta</h1>
         <p className="mt-2 text-slate-500 dark:text-slate-400">Comece a controlar suas despesas e receitas agora.</p>
       </div>
@@ -71,7 +75,7 @@ export function Register() {
 
         <button
           type="submit"
-          className="w-full rounded-2xl bg-slate-900 px-5 py-3 text-sm font-semibold text-white transition hover:bg-slate-800 disabled:cursor-not-allowed disabled:opacity-60"
+          className="w-full rounded-full bg-slate-900 px-5 py-3 text-sm font-semibold text-white transition hover:bg-slate-800 disabled:cursor-not-allowed disabled:opacity-60"
           disabled={loading}
         >
           {loading ? 'Criando conta...' : 'Criar conta'}
