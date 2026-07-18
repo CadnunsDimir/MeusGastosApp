@@ -4,6 +4,7 @@ import { ArrowLeft } from 'lucide-react';
 import { useAuth } from '../contexts/AuthContext';
 import { getProfile, updateProfile } from '../services/profile';
 import type { ProfileDTO, UpdateProfileDTO } from '../types/profile';
+import { uiClasses } from '@/styles/theme';
 
 export function Profile() {
   const navigate = useNavigate();
@@ -73,48 +74,48 @@ export function Profile() {
 
   return (
     <div className="mx-auto flex max-w-2xl flex-col gap-6 px-4 py-6 sm:px-6 lg:px-8">
-      <header className="flex items-center gap-3 rounded-3xl border border-slate-200 bg-white/90 p-6 shadow-sm dark:border-slate-800 dark:bg-slate-950">
+      <header className="flex items-center gap-3 rounded-2xl border border-rule bg-white p-6 shadow-sm dark:border-rule-dark dark:bg-panel">
         <button
           onClick={() => navigate('/dashboard')}
-          className="inline-flex items-center gap-2 rounded-2xl border border-slate-200 bg-slate-50 px-3 py-2 text-slate-700 transition hover:border-slate-300 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-200"
+          className={uiClasses.pageBackButton}
         >
           <ArrowLeft className="h-4 w-4" />
         </button>
         <div>
-          <p className="text-sm font-semibold uppercase tracking-[0.35em] text-slate-500 dark:text-slate-400">Configurações</p>
-          <h1 className="mt-2 text-2xl font-semibold text-slate-900 dark:text-slate-100">Perfil</h1>
+          <p className="font-mono text-sm font-semibold uppercase tracking-widest text-sage dark:text-sage-light">Configurações</p>
+          <h1 className="mt-2 font-display text-2xl font-semibold text-ink dark:text-paper">Perfil</h1>
         </div>
       </header>
 
       {error && (
-        <div className="rounded-3xl border border-red-200 bg-red-50 p-4 text-sm text-red-700 dark:border-red-700/50 dark:bg-red-950/30 dark:text-red-200">
+        <div className="rounded-2xl border border-brick/30 bg-brick/10 p-4 text-sm text-brick dark:border-brick-light/30 dark:bg-brick-light/10 dark:text-brick-light">
           {error}
         </div>
       )}
 
       {success && (
-        <div className="rounded-3xl border border-emerald-200 bg-emerald-50 p-4 text-sm text-emerald-700 dark:border-emerald-700/50 dark:bg-emerald-950/30 dark:text-emerald-200">
+        <div className="rounded-2xl border border-stamp/30 bg-stamp/10 p-4 text-sm text-stamp dark:border-stamp-light/30 dark:bg-stamp-light/10 dark:text-stamp-light">
           {success}
         </div>
       )}
 
-      <form onSubmit={handleSubmit} className="rounded-3xl border border-slate-200 bg-white/90 p-6 shadow-sm dark:border-slate-800 dark:bg-slate-950">
+      <form onSubmit={handleSubmit} className="rounded-2xl border border-rule bg-white p-6 shadow-sm dark:border-rule-dark dark:bg-panel">
         <div className="space-y-4">
           <div>
-            <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">
+            <label className="block text-sm font-medium text-ink-soft dark:text-stone mb-2">
               Usuário
             </label>
             <input
               type="text"
               value={profile?.userName || ''}
               disabled
-              className="w-full rounded-lg border border-slate-300 bg-slate-100 px-3 py-2 text-sm text-slate-500 dark:border-slate-600 dark:bg-slate-800 dark:text-slate-400 cursor-not-allowed"
+              className="w-full rounded-lg border border-rule bg-paper-dark/40 px-3 py-2 text-sm text-ink-soft dark:border-rule-dark dark:bg-night-soft dark:text-stone cursor-not-allowed"
             />
-            <p className="mt-1 text-xs text-slate-500 dark:text-slate-400">Não pode ser alterado</p>
+            <p className="mt-1 text-xs text-ink-soft dark:text-stone">Não pode ser alterado</p>
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">
+            <label className="block text-sm font-medium text-ink-soft dark:text-stone mb-2">
               Email
             </label>
             <input
@@ -123,13 +124,13 @@ export function Profile() {
               value={formData.email}
               onChange={handleChange}
               required
-              className="w-full rounded-lg border border-slate-300 px-3 py-2 text-sm text-slate-900 placeholder-slate-500 transition dark:border-slate-600 dark:bg-slate-900 dark:text-slate-100 dark:placeholder-slate-400"
+              className="w-full rounded-lg border border-rule px-3 py-2 text-sm text-ink placeholder-ink-soft/60 transition dark:border-rule-dark dark:bg-night dark:text-paper dark:placeholder-stone/60"
               placeholder="seu@email.com"
             />
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">
+            <label className="block text-sm font-medium text-ink-soft dark:text-stone mb-2">
               Nome
             </label>
             <input
@@ -138,13 +139,13 @@ export function Profile() {
               value={formData.firstName}
               onChange={handleChange}
               required
-              className="w-full rounded-lg border border-slate-300 px-3 py-2 text-sm text-slate-900 placeholder-slate-500 transition dark:border-slate-600 dark:bg-slate-900 dark:text-slate-100 dark:placeholder-slate-400"
+              className="w-full rounded-lg border border-rule px-3 py-2 text-sm text-ink placeholder-ink-soft/60 transition dark:border-rule-dark dark:bg-night dark:text-paper dark:placeholder-stone/60"
               placeholder="Seu nome"
             />
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">
+            <label className="block text-sm font-medium text-ink-soft dark:text-stone mb-2">
               Sobrenome
             </label>
             <input
@@ -153,7 +154,7 @@ export function Profile() {
               value={formData.lastName}
               onChange={handleChange}
               required
-              className="w-full rounded-lg border border-slate-300 px-3 py-2 text-sm text-slate-900 placeholder-slate-500 transition dark:border-slate-600 dark:bg-slate-900 dark:text-slate-100 dark:placeholder-slate-400"
+              className="w-full rounded-lg border border-rule px-3 py-2 text-sm text-ink placeholder-ink-soft/60 transition dark:border-rule-dark dark:bg-night dark:text-paper dark:placeholder-stone/60"
               placeholder="Seu sobrenome"
             />
           </div>
@@ -163,14 +164,14 @@ export function Profile() {
           <button
             type="submit"
             disabled={saving}
-            className="flex-1 rounded-lg bg-emerald-500 px-4 py-2 text-sm font-semibold text-white transition hover:bg-emerald-600 disabled:opacity-50 disabled:cursor-not-allowed"
+            className="flex-1 rounded-lg bg-brass px-4 py-2 text-sm font-semibold text-white transition hover:bg-brass-dark disabled:opacity-50 disabled:cursor-not-allowed"
           >
             {saving ? 'Salvando...' : 'Salvar Alterações'}
           </button>
           <button
             type="button"
             onClick={() => navigate('/dashboard')}
-            className="rounded-lg border border-slate-300 px-4 py-2 text-sm font-semibold text-slate-900 transition hover:border-slate-400 dark:border-slate-600 dark:text-slate-100 dark:hover:border-slate-500"
+            className="rounded-lg border border-rule px-4 py-2 text-sm font-semibold text-ink-soft transition hover:border-brass/40 dark:border-rule-dark dark:text-stone dark:hover:border-brass-light/40"
           >
             Cancelar
           </button>

@@ -16,7 +16,7 @@ const Profile = lazy(() => import('./pages/Profile').then(m => ({ default: m.Pro
 
 function App() {
   return (
-    <div className="min-h-screen bg-slate-50 text-slate-900 dark:bg-slate-950 dark:text-slate-100">
+    <div className="min-h-screen bg-paper text-ink font-body dark:bg-night dark:text-paper">
       <Suspense fallback={<PageLoader />}>
         <Routes>
           <Route path="/" element={<Home></Home>} />

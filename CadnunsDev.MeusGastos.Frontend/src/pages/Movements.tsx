@@ -7,6 +7,7 @@ import { MonthSelector } from '@/components/MonthSelector';
 import { MovementFormFields, MovementFormModal } from '@/components/MovementFormModal';
 import { BRL } from '@/services/currency';
 import { useNavigate } from 'react-router-dom';
+import { uiClasses } from '@/styles/theme';
 
 interface MovementMonth {
     month: number,
@@ -133,13 +134,13 @@ export function Movements() {
         if (!type) return null;
         switch (type) {
             case MovementType.Revenue:
-                return <span className="ml-2 inline-flex items-center rounded-md bg-emerald-50 px-2 py-1 text-xs font-medium text-emerald-700 ring-1 ring-inset ring-emerald-600/15">Receita</span>;
+                return <span className="ml-2 inline-flex items-center rounded-md bg-stamp/10 px-2 py-1 text-xs font-medium text-stamp ring-1 ring-inset ring-stamp/20 dark:bg-stamp-light/10 dark:text-stamp-light dark:ring-stamp-light/20">Receita</span>;
             case MovementType.Expense:
-                return <span className="ml-2 inline-flex items-center rounded-md bg-red-50 px-2 py-1 text-xs font-medium text-red-700 ring-1 ring-inset ring-red-600/10">Despesa</span>;
+                return <span className="ml-2 inline-flex items-center rounded-md bg-brick/10 px-2 py-1 text-xs font-medium text-brick ring-1 ring-inset ring-brick/20 dark:bg-brick-light/10 dark:text-brick-light dark:ring-brick-light/20">Despesa</span>;
             case MovementType.Transfer:
-                return <span className="ml-2 inline-flex items-center rounded-md bg-blue-50 px-2 py-1 text-xs font-medium text-blue-700 ring-1 ring-inset ring-blue-700/10">Transferência</span>;
+                return <span className="ml-2 inline-flex items-center rounded-md bg-sage/10 px-2 py-1 text-xs font-medium text-sage ring-1 ring-inset ring-sage/20 dark:bg-sage-light/10 dark:text-sage-light dark:ring-sage-light/20">Transferência</span>;
             case MovementType.Investment:
-                return <span className="ml-2 inline-flex items-center rounded-md bg-amber-50 px-2 py-1 text-xs font-medium text-amber-800 ring-1 ring-inset ring-amber-600/15">Investimento</span>;
+                return <span className="ml-2 inline-flex items-center rounded-md bg-brass/10 px-2 py-1 text-xs font-medium text-brass-dark ring-1 ring-inset ring-brass/25 dark:bg-brass/15 dark:text-brass-light dark:ring-brass/30">Investimento</span>;
             default:
                 return null;
         }
@@ -151,16 +152,16 @@ export function Movements() {
                 <div className="flex flex-nowrap items-center gap-5">
                     <button
                         onClick={() => navigate('/dashboard')}
-                        className="inline-flex items-center gap-2 rounded-2xl border border-slate-200 bg-slate-50 px-3 py-2 text-slate-700 transition hover:border-slate-300 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-200"
+                        className={uiClasses.pageBackButton}
                     >
                         <ArrowLeft className="h-4 w-4" />
                     </button>
                     <div>
-                        <p className="text-sm uppercase tracking-[0.35em] text-slate-500 dark:text-slate-400">Movimentações</p>
-                        <h1 className="mt-2 text-3xl font-semibold text-slate-900 dark:text-slate-100">Controle de entradas e saídas</h1>
+                        <p className={uiClasses.pageSubtitle}>Movimentações</p>
+                        <h1 className={uiClasses.pageTitle}>Controle de entradas e saídas</h1>
                     </div>
                 </div>
-                
+
                 <div className="flex flex-wrap items-center gap-3">
                     <MonthSelector
                         date={toDate(movementMonth)}
@@ -168,19 +169,19 @@ export function Movements() {
                     />
                     <button
                         onClick={() => setIsOpen(true)}
-                        className="inline-flex items-center gap-2 rounded-2xl bg-emerald-500 px-5 py-3 text-sm font-semibold text-white transition hover:bg-emerald-600"
+                        className={uiClasses.primaryButton}
                     >
                         <Plus className="h-4 w-4" /> Adicionar
                     </button>
                 </div>
             </div>
 
-            {error && <p className="mt-4 text-sm text-red-500">{error}</p>}
+            {error && <p className="mt-4 text-sm text-brick dark:text-brick-light">{error}</p>}
 
-            <div className="mt-6 border border-slate-200 bg-white/90 shadow-sm dark:border-slate-800 dark:bg-slate-950 rounded-2xl">
+            <div className={`mt-6 ${uiClasses.tableCard} rounded-2xl`}>
                 <div className="overflow-x-auto rounded-2xl">
-                    <table className="min-w-full divide-y divide-slate-200 text-left text-sm dark:divide-slate-800 rounded-2xl">
-                        <thead className="bg-slate-50 text-slate-500 uppercase tracking-[0.2em] dark:bg-slate-900 dark:text-slate-400 rounded-t-3xl">
+                    <table className="min-w-full divide-y divide-rule text-left text-sm dark:divide-rule-dark rounded-2xl">
+                        <thead className={`${uiClasses.tableHead} rounded-t-2xl`}>
                             <tr>
                                 <th className="px-4 py-3">Descrição</th>
                                 <th className="px-4 py-3">Data</th>
@@ -188,38 +189,38 @@ export function Movements() {
                                 <th className="px-4 py-3 text-right">Ações</th>
                             </tr>
                         </thead>
-                        <tbody className="divide-y divide-slate-100 dark:divide-slate-800">
+                        <tbody className="divide-y divide-rule dark:divide-rule-dark">
                             {
                                 loading ? (
                                     <tr>
-                                        <td colSpan={3} className="px-4 py-8 text-center text-slate-500 dark:text-slate-400">
+                                        <td colSpan={3} className="px-4 py-8 text-center text-ink-soft dark:text-stone">
                                             Carregando movimentos...
                                         </td>
                                     </tr>
                                 ) : movements.length === 0 ? (
                                     <tr>
-                                        <td colSpan={3} className="px-4 py-8 text-center text-slate-500 dark:text-slate-400">
+                                        <td colSpan={3} className="px-4 py-8 text-center text-ink-soft dark:text-stone">
                                             Nenhum movimento cadastrado ainda.
                                         </td>
                                     </tr>
                                 ) : (
                                     movements.map((movement) => (
-                                        <tr key={movement.movementId} className="hover:bg-slate-50 dark:hover:bg-slate-900/80">
-                                            <td className="px-4 py-4 text-slate-900 dark:text-slate-100">
+                                        <tr key={movement.movementId} className={uiClasses.tableRowHover}>
+                                            <td className="px-4 py-4 text-ink dark:text-paper">
                                                 {movement.description}
                                                 {renderTypeBadge(movement.type)}
                                             </td>
-                                            <td className="px-4 py-4 text-slate-500 dark:text-slate-400">{formatDateOnly(movement.date)}</td>
-                                            <td className={`px-4 py-4 text-right font-semibold ${movement.value >= 0 ? 'text-emerald-600' : 'text-red-500'}`}>
+                                            <td className="px-4 py-4 text-ink-soft dark:text-stone">{formatDateOnly(movement.date)}</td>
+                                            <td className={`px-4 py-4 text-right font-semibold ${movement.value >= 0 ? 'text-stamp dark:text-stamp-light' : 'text-brick dark:text-brick-light'}`}>
                                                 {BRL(Math.abs(movement.value))}
                                             </td>
-                                            <td className="px-4 py-4 text-right text-slate-500 dark:text-slate-400">
-                                                <button className="mr-3 inline-flex items-center gap-1 text-slate-600 hover:text-slate-900 dark:text-slate-300 dark:hover:text-slate-100">
+                                            <td className="px-4 py-4 text-right text-ink-soft dark:text-stone">
+                                                <button className="mr-3 inline-flex items-center gap-1 text-ink-soft hover:text-ink dark:text-stone dark:hover:text-paper">
                                                     <Pencil className="h-4 w-4" /> Editar
                                                 </button>
                                                 <button
                                                     onClick={event => handleDelete(event, movement.movementId)}
-                                                    className="inline-flex items-center gap-1 text-red-500 hover:text-red-600">
+                                                    className="inline-flex items-center gap-1 text-brick hover:text-brick-light dark:text-brick-light">
                                                     <Trash2 className="h-4 w-4" /> Excluir
                                                 </button>
                                             </td>

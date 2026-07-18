@@ -2,6 +2,7 @@ import { BRL } from "@/services/currency";
 import { BankAccountDTO, MovementType } from "@/types/finance";
 import { useEffect, useState } from "react";
 import { NumericFormat } from "react-number-format";
+import { uiClasses } from "@/styles/theme";
 
 export interface MovementFormFields {
     description: string;
@@ -59,11 +60,11 @@ export function MovementFormModal({
     return (
         <>
         {isOpen && (
-                <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/50 p-4">
-                    <div className="w-full max-w-2xl rounded-3xl bg-white p-6 shadow-2xl dark:bg-slate-950">
+                <div className={uiClasses.modalOverlay}>
+                    <div className={uiClasses.modalPanel}>
                         <div className="flex items-center justify-between">
-                            <h2 className="text-xl font-semibold text-slate-900 dark:text-slate-100">Nova movimentação</h2>
-                            <button className="text-slate-500 hover:text-slate-900 dark:text-slate-400" onClick={() => setIsOpen(false)}>
+                            <h2 className="font-display text-xl font-semibold text-ink dark:text-paper">Nova movimentação</h2>
+                            <button className="text-ink-soft hover:text-ink dark:text-stone dark:hover:text-paper" onClick={() => setIsOpen(false)}>
                                 Fechar
                             </button>
                         </div>
@@ -72,13 +73,13 @@ export function MovementFormModal({
                             <input
                                 value={description}
                                 onChange={(e) => setDescription(e.target.value)}
-                                className="rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm text-slate-900 outline-none dark:border-slate-700 dark:bg-slate-900 dark:text-slate-100"
+                                className={uiClasses.formInput}
                                 placeholder="Descrição"
                                 required
                             />
                              <NumericFormat
                                 value={amount}
-                                className="rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm text-slate-900 outline-none dark:border-slate-700 dark:bg-slate-900 dark:text-slate-100"
+                                className={uiClasses.formInput}
                                 inputMode="decimal"
                                 placeholder="Valor"
                                 thousandSeparator="."
@@ -95,7 +96,7 @@ export function MovementFormModal({
                             <input
                                 value={date}
                                 onChange={(e) => setDate(e.target.value)}
-                                className="rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm text-slate-900 outline-none dark:border-slate-700 dark:bg-slate-900 dark:text-slate-100"
+                                className={uiClasses.formInput}
                                 placeholder="Data"
                                 type="date"
                                 required
@@ -104,7 +105,7 @@ export function MovementFormModal({
                             <select
                                 value={type}
                                 onChange={(e) => setType(Number(e.target.value) as MovementType)}
-                                className="w-full rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm text-slate-900 outline-none dark:border-slate-700 dark:bg-slate-900 dark:text-slate-100"
+                                className={uiClasses.formInput}
                                 required
                             >
                                 <option value={MovementType.Expense}>Despesa</option>
@@ -116,7 +117,7 @@ export function MovementFormModal({
                             <select
                                 value={selectedAccountId}
                                 onChange={(e) => setSelectedAccountId(e.target.value)}
-                                className="w-full rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm text-slate-900 outline-none dark:border-slate-700 dark:bg-slate-900 dark:text-slate-100"
+                                className={uiClasses.formInput}
                                 required
                             >
                                 <option value="">{type === MovementType.Transfer ? "Selecione a conta de origem" : "Selecione uma conta"}</option>
@@ -131,7 +132,7 @@ export function MovementFormModal({
                                 <select
                                     value={destinationAccountId}
                                     onChange={(e) => setDestinationAccountId(e.target.value)}
-                                    className="w-full rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm text-slate-900 outline-none dark:border-slate-700 dark:bg-slate-900 dark:text-slate-100"
+                                    className={uiClasses.formInput}
                                     required
                                 >
                                     <option value="">Selecione a conta de destino</option>
@@ -145,8 +146,8 @@ export function MovementFormModal({
                                 </select>
                             )}
 
-                            {error && <p className="mt-4 text-sm text-red-500">{error}</p>}
-                            <button className="rounded-2xl bg-emerald-500 px-4 py-3 text-sm font-semibold text-white transition hover:bg-emerald-600" type="submit">
+                            {error && <p className="mt-4 text-sm text-brick dark:text-brick-light">{error}</p>}
+                            <button className="rounded-2xl bg-brass px-4 py-3 text-sm font-semibold text-white transition hover:bg-brass-dark" type="submit">
                                 Salvar movimentação
                             </button>
                         </form>

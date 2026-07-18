@@ -30,61 +30,61 @@ export function Register() {
   return (
     <div>
       <div className="mb-8 text-center">
-        <div className="flex items-center gap-2 justify-center scale-150 pt-7 pb-7">
+        <Link to="/" className="flex items-center gap-2 justify-center scale-150 pt-7 pb-7">
           <LogoMark />
-          <span className="font-display text-lg tracking-tight">MeusGastos</span>
-        </div>
-        <h1 className="mt-4 text-3xl font-semibold text-slate-900 dark:text-slate-100">Crie sua conta</h1>
-        <p className="mt-2 text-slate-500 dark:text-slate-400">Comece a controlar suas despesas e receitas agora.</p>
+          <span className="font-display text-lg tracking-tight text-ink dark:text-paper">MeusGastos</span>
+        </Link>
+        <h1 className="mt-4 font-display text-3xl font-semibold text-ink dark:text-paper">Crie sua conta</h1>
+        <p className="mt-2 text-ink-soft dark:text-stone">Comece a controlar suas despesas e receitas agora.</p>
       </div>
 
       <form className="space-y-6" onSubmit={handleSubmit}>
-        <div className="space-y-3 rounded-3xl border border-slate-200 bg-slate-50 p-4 shadow-sm dark:border-slate-700 dark:bg-slate-950">
-          <label className="text-sm font-medium text-slate-600 dark:text-slate-300" htmlFor="userName">Nome de usuário</label>
-          <div className="flex items-center gap-3 rounded-2xl border border-slate-200 bg-white px-4 py-3 shadow-sm dark:border-slate-800 dark:bg-slate-900">
-            <UserPlus className="h-5 w-5 text-slate-400" />
+        <div className="space-y-3 rounded-2xl border border-rule bg-paper-dark/30 p-4 dark:border-rule-dark dark:bg-night">
+          <label className="text-sm font-medium text-ink-soft dark:text-stone" htmlFor="userName">Nome de usuário</label>
+          <div className="flex items-center gap-3 rounded-2xl border border-rule bg-white px-4 py-3 dark:border-rule-dark dark:bg-panel">
+            <UserPlus className="h-5 w-5 text-ink-soft/60 dark:text-stone/60" />
             <input
               id="userName"
               type="text"
               value={userName}
               onChange={(e) => setUserName(e.target.value)}
-              className="flex-1 bg-transparent text-sm text-slate-900 outline-none placeholder:text-slate-400 dark:text-slate-100"
+              className="flex-1 bg-transparent text-sm text-ink outline-none placeholder:text-ink-soft/60 dark:text-paper dark:placeholder:text-stone/60"
               placeholder="nome de usuário"
               required
             />
           </div>
         </div>
 
-        <div className="space-y-3 rounded-3xl border border-slate-200 bg-slate-50 p-4 shadow-sm dark:border-slate-700 dark:bg-slate-950">
-          <label className="text-sm font-medium text-slate-600 dark:text-slate-300" htmlFor="password">Senha</label>
-          <div className="flex items-center gap-3 rounded-2xl border border-slate-200 bg-white px-4 py-3 shadow-sm dark:border-slate-800 dark:bg-slate-900">
-            <Lock className="h-5 w-5 text-slate-400" />
+        <div className="space-y-3 rounded-2xl border border-rule bg-paper-dark/30 p-4 dark:border-rule-dark dark:bg-night">
+          <label className="text-sm font-medium text-ink-soft dark:text-stone" htmlFor="password">Senha</label>
+          <div className="flex items-center gap-3 rounded-2xl border border-rule bg-white px-4 py-3 dark:border-rule-dark dark:bg-panel">
+            <Lock className="h-5 w-5 text-ink-soft/60 dark:text-stone/60" />
             <input
               id="password"
               type="password"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
-              className="flex-1 bg-transparent text-sm text-slate-900 outline-none placeholder:text-slate-400 dark:text-slate-100"
+              className="flex-1 bg-transparent text-sm text-ink outline-none placeholder:text-ink-soft/60 dark:text-paper dark:placeholder:text-stone/60"
               placeholder="••••••••"
               required
             />
           </div>
         </div>
 
-        {error && <p className="text-sm text-red-500">{error}</p>}
+        {error && <p className="text-sm text-brick dark:text-brick-light">{error}</p>}
 
         <button
           type="submit"
-          className="w-full rounded-full bg-slate-900 px-5 py-3 text-sm font-semibold text-white transition hover:bg-slate-800 disabled:cursor-not-allowed disabled:opacity-60"
+          className="w-full rounded-full bg-brass px-5 py-3 text-sm font-semibold text-white transition hover:bg-brass-dark disabled:cursor-not-allowed disabled:opacity-60"
           disabled={loading}
         >
           {loading ? 'Criando conta...' : 'Criar conta'}
         </button>
       </form>
 
-      <p className="mt-6 text-center text-sm text-slate-500 dark:text-slate-400">
+      <p className="mt-6 text-center text-sm text-ink-soft dark:text-stone">
         Já tem conta?{' '}
-        <Link to="/login" className="font-semibold text-slate-900 underline decoration-slate-400 decoration-2 underline-offset-4 dark:text-slate-100">
+        <Link to="/login" className="font-semibold text-ink underline decoration-rule decoration-2 underline-offset-4 dark:text-paper dark:decoration-rule-dark">
           Entrar
         </Link>
       </p>

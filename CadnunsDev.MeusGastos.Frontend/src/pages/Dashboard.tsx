@@ -134,48 +134,48 @@ export function Dashboard() {
 
   return (
     <div className="mx-auto flex max-w-7xl flex-col gap-6 px-4 py-6 sm:px-6 lg:px-8">
-      <header className="flex flex-col gap-4 rounded-3xl border border-slate-200 bg-white/90 p-6 shadow-sm shadow-slate-900/5 backdrop-blur dark:border-slate-800 dark:bg-slate-950">
+      <header className="flex flex-col gap-4 rounded-2xl border border-rule bg-white p-6 shadow-sm shadow-ink/5 backdrop-blur dark:border-rule-dark dark:bg-panel">
         <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
           <div>
-            <p className="text-sm font-semibold uppercase tracking-[0.35em] text-slate-500 dark:text-slate-400">Dashboard</p>
-            <h1 className="mt-3 text-3xl font-semibold text-slate-900 dark:text-slate-100">Olá, {firstName || 'usuário'}</h1>
-            <p className="mt-2 text-slate-500 dark:text-slate-400">Veja seu fluxo financeiro e acompanhe contas, movimentações e saldos.</p>
+            <p className="font-mono text-sm font-semibold uppercase tracking-widest text-sage dark:text-sage-light">Dashboard</p>
+            <h1 className="mt-3 font-display text-3xl font-semibold text-ink dark:text-paper">Olá, {firstName || 'usuário'}</h1>
+            <p className="mt-2 text-ink-soft dark:text-stone">Veja seu fluxo financeiro e acompanhe contas, movimentações e saldos.</p>
           </div>
 
           <div className="flex flex-wrap items-center gap-3">
             <button
               onClick={toggleTheme}
-              className="inline-flex items-center gap-2 rounded-2xl border border-slate-200 bg-slate-50 px-4 py-2 text-sm font-medium text-slate-700 transition hover:border-slate-300 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-200"
+              className="inline-flex items-center gap-2 rounded-2xl border border-rule bg-paper-dark/30 px-4 py-2 text-sm font-medium text-ink-soft transition hover:border-brass/40 dark:border-rule-dark dark:bg-night-soft dark:text-stone dark:hover:border-brass-light/40"
             >
               <Wallet className="h-4 w-4" /> Tema
             </button>
             <Link
               to="/accounts"
-              className="inline-flex items-center gap-2 rounded-2xl border border-slate-200 bg-white px-4 py-2 text-sm font-semibold text-slate-900 transition hover:border-slate-300 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-100"
+              className="inline-flex items-center gap-2 rounded-2xl border border-rule bg-white px-4 py-2 text-sm font-semibold text-ink transition hover:border-brass/40 dark:border-rule-dark dark:bg-panel dark:text-paper"
             >
               Contas
             </Link>
             <Link
               to="/bills"
-              className="inline-flex items-center gap-2 rounded-2xl border border-slate-200 bg-white px-4 py-2 text-sm font-semibold text-slate-900 transition hover:border-slate-300 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-100"
+              className="inline-flex items-center gap-2 rounded-2xl border border-rule bg-white px-4 py-2 text-sm font-semibold text-ink transition hover:border-brass/40 dark:border-rule-dark dark:bg-panel dark:text-paper"
             >
               Faturas
             </Link>
             <Link
               to="/movements"
-              className="inline-flex items-center gap-2 rounded-2xl border border-slate-200 bg-white px-4 py-2 text-sm font-semibold text-slate-900 transition hover:border-slate-300 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-100"
+              className="inline-flex items-center gap-2 rounded-2xl border border-rule bg-white px-4 py-2 text-sm font-semibold text-ink transition hover:border-brass/40 dark:border-rule-dark dark:bg-panel dark:text-paper"
             >
               Movimentações
             </Link>
             <Link
               to="/profile"
-              className="inline-flex items-center gap-2 rounded-2xl border border-slate-200 bg-white px-4 py-2 text-sm font-semibold text-slate-900 transition hover:border-slate-300 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-100"
+              className="inline-flex items-center gap-2 rounded-2xl border border-rule bg-white px-4 py-2 text-sm font-semibold text-ink transition hover:border-brass/40 dark:border-rule-dark dark:bg-panel dark:text-paper"
             >
               Perfil
             </Link>
             <button
               onClick={logout}
-              className="inline-flex items-center gap-2 rounded-2xl bg-emerald-500 px-4 py-2 text-sm font-semibold text-white transition hover:bg-emerald-600"
+              className="inline-flex items-center gap-2 rounded-full bg-brass px-4 py-2 text-sm font-semibold text-white transition hover:bg-brass-dark"
             >
               <ArrowRight className="h-4 w-4" /> Sair
             </button>
@@ -184,7 +184,7 @@ export function Dashboard() {
       </header>
 
       {error && (
-        <div className="rounded-3xl border border-red-200 bg-red-50 p-4 text-sm text-red-700 dark:border-red-700/50 dark:bg-red-950/30 dark:text-red-200">
+        <div className="rounded-2xl border border-brick/30 bg-brick/10 p-4 text-sm text-brick dark:border-brick-light/30 dark:bg-brick-light/10 dark:text-brick-light">
           {error}
         </div>
       )}
@@ -192,24 +192,24 @@ export function Dashboard() {
       <section className="grid gap-6 xl:grid-cols-[1.5fr_1fr]">
         <div className="space-y-6 min-w-0">
           <div className="grid gap-6 md:grid-cols-2 xl:grid-cols-2">
-            <article className="rounded-3xl border border-slate-200 bg-white/90 p-6 shadow-sm dark:border-slate-800 dark:bg-slate-950">
+            <article className="rounded-2xl border border-rule bg-white p-6 shadow-sm dark:border-rule-dark dark:bg-panel">
               <div className="flex items-center justify-between gap-4">
                 <div>
-                  <p className="text-sm uppercase tracking-[0.35em] text-slate-500 dark:text-slate-400">Saldo Total</p>
-                  <p className="mt-3 text-3xl font-semibold text-slate-900 dark:text-slate-100">{ BRL(totalBalance) }</p>
+                  <p className="font-mono text-sm uppercase tracking-widest text-sage dark:text-sage-light">Saldo Total</p>
+                  <p className="mt-3 font-mono text-3xl font-semibold text-stamp dark:text-stamp-light">{ BRL(totalBalance) }</p>
                 </div>
-                <div className="rounded-2xl bg-emerald-100 p-3 text-emerald-700 dark:bg-emerald-700/10 dark:text-emerald-200">
+                <div className="rounded-2xl bg-stamp/10 p-3 text-stamp dark:bg-stamp-light/15 dark:text-stamp-light">
                   <DollarSign className="h-6 w-6" />
                 </div>
               </div>
               <div className="mt-6 grid gap-3">
                 {loading ? (
-                  <div className="rounded-3xl bg-slate-50 p-4 text-sm text-slate-500 dark:bg-slate-900 dark:text-slate-400">Carregando contas...</div>
+                  <div className="rounded-2xl bg-paper-dark/30 p-4 text-sm text-ink-soft dark:bg-night-soft dark:text-stone">Carregando contas...</div>
                 ) : accounts.length === 0 ? (
-                  <div className="rounded-3xl bg-slate-50 p-4 text-sm text-slate-500 dark:bg-slate-900 dark:text-slate-400">Nenhuma conta encontrada.</div>
+                  <div className="rounded-2xl bg-paper-dark/30 p-4 text-sm text-ink-soft dark:bg-night-soft dark:text-stone">Nenhuma conta encontrada.</div>
                 ) : (
                   accounts.map((account) => (
-                    <div key={account.accountId} className="flex items-center justify-between rounded-3xl bg-slate-50 px-4 py-3 text-sm dark:bg-slate-900">
+                    <div key={account.accountId} className="flex items-center justify-between rounded-2xl bg-paper-dark/30 px-4 py-3 text-sm text-ink dark:bg-night-soft dark:text-paper">
                       <span>{account.name}</span>
                       <strong>{BRL(account.balance)}</strong>
                     </div>
@@ -218,34 +218,34 @@ export function Dashboard() {
               </div>
             </article>
 
-            <article className="rounded-3xl border border-slate-200 bg-white/90 p-6 shadow-sm dark:border-slate-800 dark:bg-slate-950">
+            <article className="rounded-2xl border border-rule bg-white p-6 shadow-sm dark:border-rule-dark dark:bg-panel">
               <div className="flex items-center justify-between gap-4">
                 <div>
-                  <p className="text-sm uppercase tracking-[0.35em] text-slate-500 dark:text-slate-400">Contas a pagar</p>
-                  <h2 className="mt-3 text-2xl font-semibold text-slate-900 dark:text-slate-100">Resumo mensal</h2>
+                  <p className="font-mono text-sm uppercase tracking-widest text-sage dark:text-sage-light">Contas a pagar</p>
+                  <h2 className="mt-3 font-display text-2xl font-semibold text-ink dark:text-paper">Resumo mensal</h2>
                 </div>
-                <div className="rounded-2xl bg-slate-100 p-3 text-slate-700 dark:bg-slate-800 dark:text-slate-200">
+                <div className="rounded-2xl bg-paper-dark/40 p-3 text-ink-soft dark:bg-night-soft dark:text-stone">
                   <Home className="h-6 w-6" />
                 </div>
               </div>
               <div className="mt-6 grid gap-4">
-                <div className="rounded-3xl bg-slate-50 p-4 dark:bg-slate-900">
-                  <p className="text-sm text-slate-500 dark:text-slate-400">Até dia 15</p>
-                  <p className="mt-2 text-2xl font-semibold text-slate-900 dark:text-slate-100">{BRL(toPayBefore)}</p>
+                <div className="rounded-2xl bg-paper-dark/30 p-4 dark:bg-night-soft">
+                  <p className="text-sm text-ink-soft dark:text-stone">Até dia 15</p>
+                  <p className="mt-2 font-mono text-2xl font-semibold text-brick dark:text-brick-light">{BRL(toPayBefore)}</p>
                 </div>
-                <div className="rounded-3xl bg-slate-50 p-4 dark:bg-slate-900">
-                  <p className="text-sm text-slate-500 dark:text-slate-400">Após dia 15</p>
-                  <p className="mt-2 text-2xl font-semibold text-slate-900 dark:text-slate-100">{BRL(toPayAfter)}</p>
+                <div className="rounded-2xl bg-paper-dark/30 p-4 dark:bg-night-soft">
+                  <p className="text-sm text-ink-soft dark:text-stone">Após dia 15</p>
+                  <p className="mt-2 font-mono text-2xl font-semibold text-brick dark:text-brick-light">{BRL(toPayAfter)}</p>
                 </div>
               </div>
             </article>
           </div>
 
-          <article className="rounded-3xl border border-slate-200 bg-white/90 p-6 shadow-sm dark:border-slate-800 dark:bg-slate-950">
+          <article className="rounded-2xl border border-rule bg-white p-6 shadow-sm dark:border-rule-dark dark:bg-panel">
             <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
               <div>
-                <p className="text-sm uppercase tracking-[0.35em] text-slate-500 dark:text-slate-400">Movimentações</p>
-                <h2 className="mt-2 text-2xl font-semibold text-slate-900 dark:text-slate-100">Este mês</h2>
+                <p className="font-mono text-sm uppercase tracking-widest text-sage dark:text-sage-light">Movimentações</p>
+                <h2 className="mt-2 font-display text-2xl font-semibold text-ink dark:text-paper">Este mês</h2>
               </div>
               <MonthSelector
                 date={currentDate}
@@ -253,31 +253,31 @@ export function Dashboard() {
             </div>
 
             <div className="mt-6 overflow-x-auto">
-              <table className="min-w-full divide-y divide-slate-200 text-left text-sm dark:divide-slate-700">
+              <table className="min-w-full divide-y divide-rule text-left text-sm dark:divide-rule-dark">
                 <thead>
-                  <tr className="text-slate-500 uppercase tracking-[0.2em] text-xs dark:text-slate-400">
+                  <tr className="font-mono text-sage uppercase tracking-[0.2em] text-xs dark:text-sage-light">
                     <th className="px-4 py-3">Descrição</th>
                     <th className="px-4 py-3">Conta</th>
                     <th className="px-4 py-3">Data</th>
                     <th className="px-4 py-3 text-right">Valor</th>
                   </tr>
                 </thead>
-                <tbody className="divide-y divide-slate-100 dark:divide-slate-800">
+                <tbody className="divide-y divide-rule dark:divide-rule-dark">
                   {loading ? (
                     <tr>
-                      <td colSpan={4} className="px-4 py-8 text-center text-slate-500 dark:text-slate-400">Carregando movimentações...</td>
+                      <td colSpan={4} className="px-4 py-8 text-center text-ink-soft dark:text-stone">Carregando movimentações...</td>
                     </tr>
                   ) : movementsWithDetails.length === 0 ? (
                     <tr>
-                      <td colSpan={4} className="px-4 py-8 text-center text-slate-500 dark:text-slate-400">Nenhuma movimentação encontrada para este mês.</td>
+                      <td colSpan={4} className="px-4 py-8 text-center text-ink-soft dark:text-stone">Nenhuma movimentação encontrada para este mês.</td>
                     </tr>
                   ) : (
                     movementsWithDetails.map((movement) => (
-                      <tr key={movement.movementId} className="hover:bg-slate-50 dark:hover:bg-slate-900/80">
-                        <td className="px-4 py-4 text-slate-900 dark:text-slate-100">{movement.description}</td>
-                        <td className="px-4 py-4 text-slate-500 dark:text-slate-400">{movement.accountName}</td>
-                        <td className="px-4 py-4 text-slate-500 dark:text-slate-400">{formatDateOnly(movement.date)}</td>
-                        <td className={`px-4 py-4 text-right font-semibold ${movement.value >= 0 ? 'text-emerald-600' : 'text-red-500'}`}>
+                      <tr key={movement.movementId} className="hover:bg-paper/60 dark:hover:bg-night-soft/60">
+                        <td className="px-4 py-4 text-ink dark:text-paper">{movement.description}</td>
+                        <td className="px-4 py-4 text-ink-soft dark:text-stone">{movement.accountName}</td>
+                        <td className="px-4 py-4 text-ink-soft dark:text-stone">{formatDateOnly(movement.date)}</td>
+                        <td className={`px-4 py-4 text-right font-semibold ${movement.value >= 0 ? 'text-stamp dark:text-stamp-light' : 'text-brick dark:text-brick-light'}`}>
                           { BRL(Math.abs(movement.value)) }
                         </td>
                       </tr>
@@ -290,31 +290,31 @@ export function Dashboard() {
         </div>
 
         <aside className="space-y-6">
-          <StatsByCategory 
+          <StatsByCategory
             categories={stats}
           />
-          <article className="rounded-3xl border border-slate-200 bg-white/90 p-6 shadow-sm dark:border-slate-800 dark:bg-slate-950">
-            <p className="text-sm uppercase tracking-[0.35em] text-slate-500 dark:text-slate-400">Próximas contas</p>
+          <article className="rounded-2xl border border-rule bg-white p-6 shadow-sm dark:border-rule-dark dark:bg-panel">
+            <p className="font-mono text-sm uppercase tracking-widest text-sage dark:text-sage-light">Próximas contas</p>
             <div className="mt-5 space-y-4">
               {nextBills.length === 0 ? (
-                <div className="rounded-3xl bg-slate-50 p-4 text-sm text-slate-500 dark:bg-slate-900 dark:text-slate-400">Nenhuma conta pendente para este mês.</div>
+                <div className="rounded-2xl bg-paper-dark/30 p-4 text-sm text-ink-soft dark:bg-night-soft dark:text-stone">Nenhuma conta pendente para este mês.</div>
               ) : (
                 nextBills.map((bill) => (
-                  <div key={bill.billId} 
+                  <div key={bill.billId}
                     onClick={() => showPayBillModal(bill) }
-                  className="flex items-center justify-between gap-4 rounded-3xl bg-slate-50 px-4 py-4 dark:bg-slate-900">
+                  className="flex items-center justify-between gap-4 rounded-2xl bg-paper-dark/30 px-4 py-4 dark:bg-night-soft cursor-pointer">
                     <div>
-                      <p className="font-semibold text-slate-900 dark:text-slate-100">{bill.billDescription}</p>
-                      <p className="text-sm text-slate-500 dark:text-slate-400">Vencimento dia {bill.paymentDay}</p>
+                      <p className="font-semibold text-ink dark:text-paper">{bill.billDescription}</p>
+                      <p className="text-sm text-ink-soft dark:text-stone">Vencimento dia {bill.paymentDay}</p>
                     </div>
-                    <span className={`rounded-2xl px-3 py-1 text-sm font-semibold ${bill.isPaid ? 'bg-emerald-100 text-emerald-700' : 'bg-red-100 text-red-700'}`}>
+                    <span className={`rounded-2xl px-3 py-1 text-sm font-semibold ${bill.isPaid ? 'bg-stamp/10 text-stamp dark:bg-stamp-light/10 dark:text-stamp-light' : 'bg-brick/10 text-brick dark:bg-brick-light/10 dark:text-brick-light'}`}>
                       {bill.isPaid ? 'Pago' : 'Pendente'}
                     </span>
                   </div>
                 ))
               )}
             </div>
-            <PayBillModal 
+            <PayBillModal
               accounts={accounts}
               bill={selectedBill}
               isOpen={isShowPayBillModal}
@@ -322,31 +322,31 @@ export function Dashboard() {
               onSuccess={()=> fetchDashboardData()}
             />
           </article>
-          <article className="rounded-3xl border border-slate-200 bg-white/90 p-6 shadow-sm dark:border-slate-800 dark:bg-slate-950">
-            <p className="text-sm uppercase tracking-[0.35em] text-slate-500 dark:text-slate-400">Visão geral</p>
+          <article className="rounded-2xl border border-rule bg-white p-6 shadow-sm dark:border-rule-dark dark:bg-panel">
+            <p className="font-mono text-sm uppercase tracking-widest text-sage dark:text-sage-light">Visão geral</p>
             <div className="mt-5 grid gap-4">
               {overviewCards.map((card) => (
-                <div key={card.title} className="rounded-3xl border border-slate-200 bg-slate-50 p-4 dark:border-slate-800 dark:bg-slate-900">
-                  <p className="text-sm text-slate-500 dark:text-slate-400">{card.title}</p>
-                  <p className="mt-3 text-xl font-semibold text-slate-900 dark:text-slate-100">{BRL(card.value)}</p>
+                <div key={card.title} className="rounded-2xl border border-rule bg-paper-dark/30 p-4 dark:border-rule-dark dark:bg-night-soft">
+                  <p className="text-sm text-ink-soft dark:text-stone">{card.title}</p>
+                  <p className="mt-3 font-mono text-xl font-semibold text-ink dark:text-paper">{BRL(card.value)}</p>
                 </div>
               ))}
             </div>
           </article>
 
-          <article className="rounded-3xl border border-slate-200 bg-white/90 p-6 shadow-sm dark:border-slate-800 dark:bg-slate-950">
+          <article className="rounded-2xl border border-rule bg-white p-6 shadow-sm dark:border-rule-dark dark:bg-panel">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm uppercase tracking-[0.35em] text-slate-500 dark:text-slate-400">Distribuição</p>
-                <h2 className="mt-2 text-xl font-semibold text-slate-900 dark:text-slate-100">Por conta</h2>
+                <p className="font-mono text-sm uppercase tracking-widest text-sage dark:text-sage-light">Distribuição</p>
+                <h2 className="mt-2 font-display text-xl font-semibold text-ink dark:text-paper">Por conta</h2>
               </div>
-              <div className="rounded-2xl bg-slate-100 p-3 text-slate-700 dark:bg-slate-800 dark:text-slate-200">
+              <div className="rounded-2xl bg-paper-dark/40 p-3 text-ink-soft dark:bg-night-soft dark:text-stone">
                 <Wallet className="h-5 w-5" />
               </div>
             </div>
             <div className="mt-6 space-y-4">
               {distributionItems.map((item) => (
-                <div key={item.category} className="flex items-center justify-between gap-3 rounded-3xl bg-slate-50 px-4 py-3 text-sm dark:bg-slate-900">
+                <div key={item.category} className="flex items-center justify-between gap-3 rounded-2xl bg-paper-dark/30 px-4 py-3 text-sm text-ink dark:bg-night-soft dark:text-paper">
                   <span>{item.category}</span>
                   <strong>{BRL(item.value)}</strong>
                 </div>
@@ -354,7 +354,7 @@ export function Dashboard() {
             </div>
           </article>
 
-          
+
         </aside>
       </section>
     </div>

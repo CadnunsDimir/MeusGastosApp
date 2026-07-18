@@ -229,7 +229,7 @@ function HomeCtaFinal() {
 function HomeFooter() {
   return (
     <footer className="max-w-6xl mx-auto px-6 py-8 flex flex-col sm:flex-row items-center justify-between gap-4 text-sm text-ink-soft">
-      <span className="font-display">MeusGastos</span>
+      <span className="font-display">MeusGastos · Feito por <a href="https://www.linkedin.com/in/tiago-silva-do-nascimento/">Tiago Silva do Nascimento</a></span>
       <div className="flex items-center gap-6">
         <Link to="/login" className="hover:text-ink">
           Entrar

@@ -58,14 +58,14 @@ export function PayBillModal({
   return (
     <>
       {isOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/50 p-4">
-          <div className="w-full max-w-2xl rounded-3xl bg-white p-6 shadow-2xl dark:bg-slate-950">
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-ink/50 p-4">
+          <div className="w-full max-w-2xl rounded-2xl border border-rule bg-white p-6 shadow-2xl dark:border-rule-dark dark:bg-panel">
             <div className="flex items-center justify-between">
-              <h2 className="text-xl font-semibold text-slate-900 dark:text-slate-100">
+              <h2 className="font-display text-xl font-semibold text-ink dark:text-paper">
                 Pagar conta
               </h2>
               <button
-                className="text-slate-500 hover:text-slate-900 dark:text-slate-400"
+                className="text-ink-soft hover:text-ink dark:text-stone dark:hover:text-paper"
                 onClick={() => setIsOpen(false)}
                 type="button"
               >
@@ -77,7 +77,7 @@ export function PayBillModal({
               <input
                 value={date}
                 onChange={(e) => setDate(e.target.value)}
-                className="rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm text-slate-900 outline-none dark:border-slate-700 dark:bg-slate-900 dark:text-slate-100"
+                className="rounded-2xl border border-rule bg-paper-dark/30 px-4 py-3 text-sm text-ink outline-none placeholder:text-ink-soft/60 dark:border-rule-dark dark:bg-night dark:text-paper dark:placeholder:text-stone/60"
                 placeholder="Data"
                 type="date"
                 required
@@ -85,7 +85,7 @@ export function PayBillModal({
               <select
                 value={selectedAccountId}
                 onChange={(e) => setSelectedAccountId(e.target.value)}
-                className="w-full rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm text-slate-900 outline-none dark:border-slate-700 dark:bg-slate-900 dark:text-slate-100"
+                className="w-full rounded-2xl border border-rule bg-paper-dark/30 px-4 py-3 text-sm text-ink outline-none dark:border-rule-dark dark:bg-night dark:text-paper"
                 required
               >
                 <option value="">Selecione uma conta</option>
@@ -96,10 +96,10 @@ export function PayBillModal({
                 ))}
               </select>
 
-              {error && <p className="mt-4 text-sm text-red-500">{error}</p>}
+              {error && <p className="mt-4 text-sm text-brick dark:text-brick-light">{error}</p>}
 
               <button
-                className="rounded-2xl bg-emerald-500 px-4 py-3 text-sm font-semibold text-white transition hover:bg-emerald-600 disabled:opacity-50"
+                className="rounded-2xl bg-brass px-4 py-3 text-sm font-semibold text-white transition hover:bg-brass-dark disabled:opacity-50"
                 type="submit"
                 disabled={isSubmitting}
               >

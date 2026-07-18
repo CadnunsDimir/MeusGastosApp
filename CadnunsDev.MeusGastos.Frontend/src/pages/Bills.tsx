@@ -6,6 +6,7 @@ import { MonthSelector } from '@/components/MonthSelector';
 import { NumericFormat } from 'react-number-format';
 import { BRL } from '@/services/currency';
 import { useNavigate } from 'react-router-dom';
+import { uiClasses } from '@/styles/theme';
 
 export function Bills() {
   const navigate = useNavigate();
@@ -145,13 +146,13 @@ export function Bills() {
         <div className="flex flex-nowrap items-center gap-5">
           <button
             onClick={() => navigate('/dashboard')}
-            className="inline-flex items-center gap-2 rounded-2xl border border-slate-200 bg-slate-50 px-3 py-2 text-slate-700 transition hover:border-slate-300 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-200"
+            className={uiClasses.pageBackButton}
           >
             <ArrowLeft className="h-4 w-4" />
           </button>
           <div>
-            <p className="text-sm uppercase tracking-[0.35em] text-slate-500 dark:text-slate-400">Contas a pagar</p>
-            <h1 className="mt-2 text-3xl font-semibold text-slate-900 dark:text-slate-100">Gerencie suas faturas</h1>
+            <p className={uiClasses.pageSubtitle}>Contas a pagar</p>
+            <h1 className={uiClasses.pageTitle}>Gerencie suas faturas</h1>
           </div>
         </div>
         <div className="flex flex-wrap items-center gap-3">
@@ -160,16 +161,16 @@ export function Bills() {
             onDateChange={date => setCurrentDate(date)} />
           <button
             onClick={() => setIsOpen(true)}
-            className="inline-flex items-center gap-2 rounded-2xl bg-emerald-500 px-5 py-3 text-sm font-semibold text-white transition hover:bg-emerald-600"
+            className={uiClasses.primaryButton}
           >
             <Plus className="h-4 w-4" /> Nova fatura
           </button>
         </div>
       </div>
 
-      <div className="mt-6 overflow-hidden rounded-3xl border border-slate-200 bg-white/90 shadow-sm dark:border-slate-800 dark:bg-slate-950">
-        <table className="min-w-full divide-y divide-slate-200 text-left text-sm dark:divide-slate-800">
-          <thead className="bg-slate-50 text-slate-500 uppercase tracking-[0.2em] dark:bg-slate-900 dark:text-slate-400">
+      <div className={`mt-6 ${uiClasses.tableCard}`}>
+        <table className="min-w-full divide-y divide-rule text-left text-sm dark:divide-rule-dark">
+          <thead className={uiClasses.tableHead}>
             <tr>
               <th className="px-4 py-3">Descrição</th>
               <th className="px-4 py-3">Categoria</th>
@@ -179,35 +180,35 @@ export function Bills() {
               <th className="px-4 py-3 text-right">Ações</th>
             </tr>
           </thead>
-          <tbody className="divide-y divide-slate-100 dark:divide-slate-800">
+          <tbody className="divide-y divide-rule dark:divide-rule-dark">
             {loading ? (
               <tr>
-                <td colSpan={6} className="px-4 py-8 text-center text-slate-500 dark:text-slate-400">
+                <td colSpan={6} className="px-4 py-8 text-center text-ink-soft dark:text-stone">
                   Carregando faturas...
                 </td>
               </tr>
             ) : bills.length === 0 ? (
               <tr>
-                <td colSpan={6} className="px-4 py-8 text-center text-slate-500 dark:text-slate-400">
+                <td colSpan={6} className="px-4 py-8 text-center text-ink-soft dark:text-stone">
                   Nenhuma fatura encontrada para este mês.
                 </td>
               </tr>
             ) : (
               bills.map((bill) => (
-                <tr key={bill.billId} className="hover:bg-slate-50 dark:hover:bg-slate-900/80">
-                  <td className="px-4 py-4 text-slate-900 dark:text-slate-100">{bill.billDescription}</td>
-                  <td className="px-4 py-4 text-slate-500 dark:text-slate-400">{bill.category}</td>
-                  <td className="px-4 py-4 text-slate-500 dark:text-slate-400">Dia {bill.paymentDay}</td>
-                  <td className="px-4 py-4 text-slate-900 dark:text-slate-100">{BRL(bill.value)}</td>
+                <tr key={bill.billId} className={uiClasses.tableRowHover}>
+                  <td className="px-4 py-4 text-ink dark:text-paper">{bill.billDescription}</td>
+                  <td className="px-4 py-4 text-ink-soft dark:text-stone">{bill.category}</td>
+                  <td className="px-4 py-4 text-ink-soft dark:text-stone">Dia {bill.paymentDay}</td>
+                  <td className="px-4 py-4 font-mono text-ink dark:text-paper">{BRL(bill.value)}</td>
                   <td className="px-4 py-4 text-center text-sm font-semibold">
-                    <span className={`inline-flex rounded-full px-3 py-1 ${bill.isPaid ? 'bg-emerald-100 text-emerald-700' : 'bg-red-100 text-red-700'}`}>
+                    <span className={`inline-flex rounded-full px-3 py-1 ${bill.isPaid ? 'bg-stamp/10 text-stamp dark:bg-stamp-light/10 dark:text-stamp-light' : 'bg-brick/10 text-brick dark:bg-brick-light/10 dark:text-brick-light'}`}>
                       {bill.isPaid ? 'Sim' : 'Não'}
                     </span>
                   </td>
-                  <td className="px-4 py-4 text-right text-slate-500 dark:text-slate-400">
+                  <td className="px-4 py-4 text-right text-ink-soft dark:text-stone">
                     <button
                       onClick={() => handleDeleteBill(bill.billId)}
-                      className="inline-flex items-center gap-1 text-red-500 hover:text-red-600"
+                      className="inline-flex items-center gap-1 text-brick hover:text-brick-light dark:text-brick-light"
                     >
                       <Trash2 className="h-4 w-4" /> Excluir
                     </button>
@@ -219,14 +220,14 @@ export function Bills() {
         </table>
       </div>
 
-      {error && <p className="mt-4 text-sm text-red-500">{error}</p>}
+      {error && <p className="mt-4 text-sm text-brick dark:text-brick-light">{error}</p>}
 
       {isOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/50 p-4">
-          <div className="w-full max-w-2xl rounded-3xl bg-white p-6 shadow-2xl dark:bg-slate-950">
+        <div className={uiClasses.modalOverlay}>
+          <div className={uiClasses.modalPanel}>
             <div className="flex items-center justify-between">
-              <h2 className="text-xl font-semibold text-slate-900 dark:text-slate-100">Nova conta a pagar</h2>
-              <button className="text-slate-500 hover:text-slate-900 dark:text-slate-400" onClick={() => setIsOpen(false)}>
+              <h2 className="font-display text-xl font-semibold text-ink dark:text-paper">Nova conta a pagar</h2>
+              <button className="text-ink-soft hover:text-ink dark:text-stone dark:hover:text-paper" onClick={() => setIsOpen(false)}>
                 Fechar
               </button>
             </div>
@@ -234,13 +235,13 @@ export function Bills() {
               <input
                 value={description}
                 onChange={(e) => setDescription(e.target.value)}
-                className="rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm text-slate-900 outline-none dark:border-slate-700 dark:bg-slate-900 dark:text-slate-100"
+                className={uiClasses.formInput}
                 placeholder="Descrição"
                 required
               />
               <NumericFormat
                 value={value}
-                className="rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm text-slate-900 outline-none dark:border-slate-700 dark:bg-slate-900 dark:text-slate-100"
+                className={uiClasses.formInput}
                 inputMode="decimal"
                 placeholder="Valor"
                 thousandSeparator="."
@@ -257,7 +258,7 @@ export function Bills() {
               <input
                 value={paymentDay}
                 onChange={(e) => setPaymentDay(e.target.value)}
-                className="rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm text-slate-900 outline-none dark:border-slate-700 dark:bg-slate-900 dark:text-slate-100"
+                className={uiClasses.formInput}
                 placeholder="Dia de pagamento"
                 type="number"
                 min="1"
@@ -268,13 +269,13 @@ export function Bills() {
                 <input
                   value={category}
                   onChange={(e) => setCategory(e.target.value)}
-                  className="w-full rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm text-slate-900 outline-none dark:border-slate-700 dark:bg-slate-900 dark:text-slate-100"
+                  className={uiClasses.formInput}
                   placeholder="Categoria"
                   required
                 />
 
                 {showSuggestions && (
-                  <div className="absolute left-0 right-0 z-20 mt-1 rounded-xl border border-slate-200 bg-white shadow-lg dark:border-slate-700 dark:bg-slate-800">
+                  <div className="absolute left-0 right-0 z-20 mt-1 rounded-xl border border-rule bg-white shadow-lg dark:border-rule-dark dark:bg-panel">
                     {suggestions.map((item) => (
                       <button
                         key={item.categoryId}
@@ -283,7 +284,7 @@ export function Bills() {
                           setCategory(item.description);
                           setShowSuggestions(false);
                         }}
-                        className="block w-full px-4 py-3 text-left text-sm hover:bg-slate-100 dark:hover:bg-slate-700"
+                        className="block w-full px-4 py-3 text-left text-sm hover:bg-paper-dark/30 dark:hover:bg-night-soft"
                       >
                         {item.description}
                       </button>
@@ -291,18 +292,18 @@ export function Bills() {
                   </div>
                 )}
               </div>
-              <label className="inline-flex items-center gap-3 rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm text-slate-900 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-100">
+              <label className="inline-flex items-center gap-3 rounded-2xl border border-rule bg-paper-dark/30 px-4 py-3 text-sm text-ink dark:border-rule-dark dark:bg-night dark:text-paper">
                 <input
                   type="checkbox"
                   checked={repeatNextMonth}
                   onChange={(e) => setRepeatNextMonth(e.target.checked)}
-                  className="h-4 w-4 rounded border-slate-300 text-emerald-500 focus:ring-emerald-500"
+                  className="h-4 w-4 rounded border-rule text-brass focus:ring-brass"
                 />
                 Continuar com o mesmo valor no próximo mês
               </label>
               <button
                 type="submit"
-                className="rounded-2xl bg-emerald-500 px-4 py-3 text-sm font-semibold text-white transition hover:bg-emerald-600 disabled:cursor-not-allowed disabled:opacity-60"
+                className="rounded-2xl bg-brass px-4 py-3 text-sm font-semibold text-white transition hover:bg-brass-dark disabled:cursor-not-allowed disabled:opacity-60"
                 disabled={saving}
               >
                 {saving ? 'Salvando...' : 'Salvar fatura'}

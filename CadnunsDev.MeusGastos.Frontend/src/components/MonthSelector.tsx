@@ -15,18 +15,18 @@ export function MonthSelector({
     const monthLabel = useMemo(() => format(date, 'MMMM yyyy', { locale: ptBR }), [date]);
 
     return (
-        <div className="flex items-center gap-2 rounded-2xl border border-slate-200 bg-slate-50 p-2 dark:border-slate-800 dark:bg-slate-900">
+        <div className="flex items-center gap-2 rounded-2xl border border-rule bg-paper-dark/30 p-2 dark:border-rule-dark dark:bg-night-soft">
             <button
                 onClick={() => onDateChange(subMonths(date, 1))}
-                className="rounded-2xl p-2 text-slate-600 transition hover:bg-slate-100 dark:text-slate-300 dark:hover:bg-slate-800"
+                className="rounded-2xl p-2 text-ink-soft transition hover:bg-paper-dark/50 dark:text-stone dark:hover:bg-panel"
                 aria-label="Mês anterior"
             >
                 <ArrowLeft className="h-4 w-4" />
             </button>
-            <span className="px-3 text-sm font-semibold text-slate-800 dark:text-slate-100">{monthLabel}</span>
+            <span className="px-3 text-sm font-mono text-ink dark:text-paper">{monthLabel}</span>
             <button
                 onClick={() => onDateChange(addMonths(date, 1))}
-                className="rounded-2xl p-2 text-slate-600 transition hover:bg-slate-100 dark:text-slate-300 dark:hover:bg-slate-800"
+                className="rounded-2xl p-2 text-ink-soft transition hover:bg-paper-dark/50 dark:text-stone dark:hover:bg-panel"
                 aria-label="Próximo mês"
             >
                 <ArrowRight className="h-4 w-4" />

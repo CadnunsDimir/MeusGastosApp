@@ -5,6 +5,7 @@ import type { BankAccountDTO, NewBankAccountDTO } from '../types/finance';
 import { BRL } from '@/services/currency';
 import { NumericFormat } from 'react-number-format';
 import { useNavigate } from 'react-router-dom';
+import { uiClasses } from '@/styles/theme';
 
 export function Accounts() {
   const navigate = useNavigate();
@@ -80,54 +81,54 @@ export function Accounts() {
         <div className="flex flex-nowrap items-center gap-5">
           <button
             onClick={() => navigate('/dashboard')}
-            className="inline-flex items-center gap-2 rounded-2xl border border-slate-200 bg-slate-50 px-3 py-2 text-slate-700 transition hover:border-slate-300 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-200"
+            className={uiClasses.pageBackButton}
           >
             <ArrowLeft className="h-4 w-4" />
           </button>
           <div>
-            <p className="text-sm uppercase tracking-[0.35em] text-slate-500 dark:text-slate-400">Contas / Bancos</p>
-            <h1 className="mt-2 text-3xl font-semibold text-slate-900 dark:text-slate-100">Gerencie suas contas bancárias</h1>
+            <p className={uiClasses.pageSubtitle}>Contas / Bancos</p>
+            <h1 className={uiClasses.pageTitle}>Gerencie suas contas bancárias</h1>
           </div>
         </div>
         <button
           onClick={() => setIsOpen(true)}
-          className="inline-flex items-center gap-2 rounded-2xl bg-emerald-500 px-5 py-3 text-sm font-semibold text-white transition hover:bg-emerald-600"
+          className={uiClasses.primaryButton}
         >
           <Plus className="h-4 w-4" /> Nova conta
         </button>
       </div>
 
-      <div className="mt-6 overflow-hidden rounded-3xl border border-slate-200 bg-white/90 shadow-sm dark:border-slate-800 dark:bg-slate-950">
-        <table className="min-w-full divide-y divide-slate-200 text-left text-sm dark:divide-slate-800">
-          <thead className="bg-slate-50 text-slate-500 uppercase tracking-[0.2em] dark:bg-slate-900 dark:text-slate-400">
+      <div className={`mt-6 ${uiClasses.tableCard}`}>
+        <table className="min-w-full divide-y divide-rule text-left text-sm dark:divide-rule-dark">
+          <thead className={uiClasses.tableHead}>
             <tr>
               <th className="px-4 py-3">Banco</th>
               <th className="px-4 py-3">Saldo</th>
               <th className="px-4 py-3 text-right">Ações</th>
             </tr>
           </thead>
-          <tbody className="divide-y divide-slate-100 dark:divide-slate-800">
+          <tbody className="divide-y divide-rule dark:divide-rule-dark">
             {loading ? (
               <tr>
-                <td colSpan={3} className="px-4 py-8 text-center text-slate-500 dark:text-slate-400">
+                <td colSpan={3} className="px-4 py-8 text-center text-ink-soft dark:text-stone">
                   Carregando contas...
                 </td>
               </tr>
             ) : accounts.length === 0 ? (
               <tr>
-                <td colSpan={3} className="px-4 py-8 text-center text-slate-500 dark:text-slate-400">
+                <td colSpan={3} className="px-4 py-8 text-center text-ink-soft dark:text-stone">
                   Nenhuma conta cadastrada ainda.
                 </td>
               </tr>
             ) : (
               accounts.map((account) => (
-                <tr key={account.accountId} className="hover:bg-slate-50 dark:hover:bg-slate-900/80">
-                  <td className="px-4 py-4 text-slate-900 dark:text-slate-100">{account.name}</td>
-                  <td className="px-4 py-4 text-slate-900 dark:text-slate-100">{BRL(account.balance)}</td>
-                  <td className="px-4 py-4 text-right text-slate-500 dark:text-slate-400">
+                <tr key={account.accountId} className={uiClasses.tableRowHover}>
+                  <td className="px-4 py-4 text-ink dark:text-paper">{account.name}</td>
+                  <td className="px-4 py-4 font-mono text-ink dark:text-paper">{BRL(account.balance)}</td>
+                  <td className="px-4 py-4 text-right text-ink-soft dark:text-stone">
                     <button
                       onClick={() => handleDeleteAccount(account.accountId)}
-                      className="inline-flex items-center gap-1 text-red-500 hover:text-red-600"
+                      className="inline-flex items-center gap-1 text-brick hover:text-brick-light dark:text-brick-light"
                     >
                       <Trash2 className="h-4 w-4" /> Excluir
                     </button>
@@ -139,14 +140,14 @@ export function Accounts() {
         </table>
       </div>
 
-      {error && <p className="mt-4 text-sm text-red-500">{error}</p>}
+      {error && <p className="mt-4 text-sm text-brick dark:text-brick-light">{error}</p>}
 
       {isOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/50 p-4">
-          <div className="w-full max-w-2xl rounded-3xl bg-white p-6 shadow-2xl dark:bg-slate-950">
+        <div className={uiClasses.modalOverlay}>
+          <div className={uiClasses.modalPanel}>
             <div className="flex items-center justify-between">
-              <h2 className="text-xl font-semibold text-slate-900 dark:text-slate-100">Nova conta bancária</h2>
-              <button className="text-slate-500 hover:text-slate-900 dark:text-slate-400" onClick={() => setIsOpen(false)}>
+              <h2 className="font-display text-xl font-semibold text-ink dark:text-paper">Nova conta bancária</h2>
+              <button className="text-ink-soft hover:text-ink dark:text-stone dark:hover:text-paper" onClick={() => setIsOpen(false)}>
                 Fechar
               </button>
             </div>
@@ -154,13 +155,13 @@ export function Accounts() {
               <input
                 value={bankName}
                 onChange={(e) => setBankName(e.target.value)}
-                className="rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm text-slate-900 outline-none dark:border-slate-700 dark:bg-slate-900 dark:text-slate-100"
+                className={uiClasses.formInput}
                 placeholder="Nome do banco"
                 required
               />
               <NumericFormat
                 value={initialBalance}
-                className="rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm text-slate-900 outline-none dark:border-slate-700 dark:bg-slate-900 dark:text-slate-100"
+                className={uiClasses.formInput}
                 inputMode="decimal"
                 placeholder="Valor"
                 thousandSeparator="."
@@ -176,7 +177,7 @@ export function Accounts() {
               />
               <button
                 type="submit"
-                className="rounded-2xl bg-emerald-500 px-4 py-3 text-sm font-semibold text-white transition hover:bg-emerald-600 disabled:cursor-not-allowed disabled:opacity-60"
+                className="rounded-2xl bg-brass px-4 py-3 text-sm font-semibold text-white transition hover:bg-brass-dark disabled:cursor-not-allowed disabled:opacity-60"
                 disabled={saving}
               >
                 {saving ? 'Salvando...' : 'Salvar conta'}
