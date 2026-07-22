@@ -1,7 +1,3 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 using CadnunsDev.MeusGastos.Backend.Domain.Entities;
 
 namespace CadnunsDev.MeusGastos.Backend.Models
@@ -12,7 +8,7 @@ namespace CadnunsDev.MeusGastos.Backend.Models
         public required string Name { get; init; }
         public decimal Balance { get; init; }
 
-        internal static List<BankAccountDTO> MapList(List<BankAccount> accounts)
+        public static List<BankAccountDTO> MapList(List<BankAccount> accounts)
         {
             return accounts.Select(x=> new BankAccountDTO
             {

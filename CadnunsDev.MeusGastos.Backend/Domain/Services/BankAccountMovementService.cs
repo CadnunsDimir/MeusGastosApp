@@ -26,7 +26,7 @@ namespace CadnunsDev.MeusGastos.Backend.Domain.Services
             this.logger = logger;
         }
 
-        internal async Task<AccountMovementDTO> CreateNewAsync(string userName, int year, int month, NewAccountMovementDTO movement)
+        public async Task<AccountMovementDTO> CreateNewAsync(string userName, int year, int month, NewAccountMovementDTO movement)
         {
             logger.LogInformation("CreateNewAsync movement for user={UserName}, account={AccountId}, value={Value}, Date={Date}", 
                 userName, 
@@ -66,7 +66,7 @@ namespace CadnunsDev.MeusGastos.Backend.Domain.Services
             return created;
         }
 
-        internal async Task<List<AccountMovementDTO>> CreateNewV2Async(string userName, int year, int month, NewAccountMovementV2DTO movement)
+        public async Task<List<AccountMovementDTO>> CreateNewV2Async(string userName, int year, int month, NewAccountMovementV2DTO movement)
         {
             logger.LogInformation("CreateNewV2Async movement for user={UserName}, type={Type}, account={AccountId}, destAccount={DestAccountId}, value={Value}, Day={Day}", 
                 userName, 
@@ -175,7 +175,7 @@ namespace CadnunsDev.MeusGastos.Backend.Domain.Services
             return createdMovements;
         }
 
-        internal async Task DeleteAsync(string userName, Guid movementId)
+        public async Task DeleteAsync(string userName, Guid movementId)
         {
             await unitOfWork.ExecuteAsync(async () =>
             {
@@ -235,7 +235,7 @@ namespace CadnunsDev.MeusGastos.Backend.Domain.Services
 
         }
 
-        internal async Task<List<AccountMovementDTO>> ListAsync(string userName, int year, int month)
+        public async Task<List<AccountMovementDTO>> ListAsync(string userName, int year, int month)
         {
             logger.LogInformation("List movements for user={UserName}, year={Year}, month={Month}", userName, year, month);
             var user = await userRepository.GetByUserName(userName) ?? throw new Exceptions.InvalidUserException();

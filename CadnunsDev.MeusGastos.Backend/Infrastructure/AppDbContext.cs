@@ -1,5 +1,3 @@
-using System;
-using System.Linq;
 using CadnunsDev.MeusGastos.Backend.Domain.Entities;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.ChangeTracking;
@@ -18,6 +16,7 @@ public class AppDbContext : DbContext
     public DbSet<BankAccountMovement> BankAccountMovements { get; set; } = null!;
     public DbSet<BillCategory> BillCategories { get; set; } = null!;
     public DbSet<BillToPay> BillsToPay { get; set; } = null!;
+    public DbSet<ShareDashboard> ShareDashboardS { get; set; } = null!;
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -99,6 +98,26 @@ public class AppDbContext : DbContext
                   .HasForeignKey("CategoryId")
                   .IsRequired()
                   .OnDelete(DeleteBehavior.Restrict);
+        });
+
+        modelBuilder.Entity<ShareDashboard>(entity =>
+        {
+            entity.HasKey(e => e.ShareId);
+            
+            entity.HasOne(b => b.DashboardOwner)
+                  .WithMany()
+                  .HasForeignKey("DashboardOwnerUserId")
+                  .IsRequired()
+                  .OnDelete(DeleteBehavior.Restrict);
+            
+            entity.HasOne(b => b.SharedWithUser)
+                  .WithMany()
+                  .HasForeignKey("SharedWithUserId")
+                  .IsRequired()
+                  .OnDelete(DeleteBehavior.Restrict);
+
+            entity.HasIndex("DashboardOwnerUserId", "SharedWithUserId")
+                .IsUnique();
         });
     }
 }

@@ -12,7 +12,7 @@ namespace CadnunsDev.MeusGastos.Backend.Infrastructure
         }
     }
 
-    internal class GlobalExceptionHandler : IExceptionHandler
+    public class GlobalExceptionHandler : IExceptionHandler
     {
         private readonly ILogger<GlobalExceptionHandler> _logger;
 

@@ -8,6 +8,8 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.RateLimiting;
 using Serilog;
 using CadnunsDev.MeusGastos.Backend;
+using CadnunsDev.MeusGastos.Backend.Adapter;
+using CadnunsDev.MeusGastos.Backend.Infrastructure.Repositories;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -39,6 +41,7 @@ builder.Services.AddScoped<IBankAccountRepository, BankAccountRepository>();
 builder.Services.AddScoped<IBillCategoryRepository, BillCategoryRepository>();
 builder.Services.AddScoped<IBillToPayRepository, BillToPayRepository>();
 builder.Services.AddScoped<IBankAccountMovementRepository, BankAccountMovementRepository>();
+builder.Services.AddScoped<IShareDashboardRepository, ShareDashboardRepository>();
 
 builder.Services.AddScoped<NewUserService>();
 builder.Services.AddScoped<LoginService>();
@@ -48,6 +51,7 @@ builder.Services.AddScoped<BillToPayService>();
 builder.Services.AddScoped<BankAccountMovementService>();
 builder.Services.AddScoped<DashboardService>();
 builder.Services.AddScoped<UserProfileService>();
+builder.Services.AddScoped<ShareDashboardService>();
 
 builder.Services.AddRateLimiter(options =>
 {
@@ -83,6 +87,8 @@ var app = builder.Build();
 
 app.UseRateLimiter();
 
+// swagerlink /swagger
+// openapi /swagger/v1/swagger.json
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
@@ -157,5 +163,7 @@ app.MapPost("/bank/movements/v2/{year}/{month}", (int year, int month, NewAccoun
 app.MapGet("/bank/dashboard/{year}/{month}", (int year, int month, ClaimsPrincipal user, DashboardService dashboardService)=> 
     dashboardService.GenerateExpensesCategoriesByMonth(user.GetUserName(),month, year))
     .RequireAuthorization();
+
+app.MapShareDashboardEndpoins();
 
 app.Run();

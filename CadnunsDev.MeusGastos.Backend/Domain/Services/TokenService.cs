@@ -75,7 +75,7 @@ namespace CadnunsDev.MeusGastos.Backend.Domain.Services
             return list.ToArray();
         }
 
-        internal async Task<User?> ValidateRefreshTokenAsync(string refreshToken)
+        public async Task<User?> ValidateRefreshTokenAsync(string refreshToken)
         {
             if (string.IsNullOrWhiteSpace(refreshToken))
                 return null;
@@ -106,7 +106,7 @@ namespace CadnunsDev.MeusGastos.Backend.Domain.Services
             return Convert.ToBase64String(hashedBytes);
         }
 
-        internal string GenerateRefreshToken()
+        public string GenerateRefreshToken()
         {
             var randomBytes = new byte[64];
             RandomNumberGenerator.Fill(randomBytes);
@@ -117,7 +117,7 @@ namespace CadnunsDev.MeusGastos.Backend.Domain.Services
                 .TrimEnd('=');
         }
 
-        internal async Task RotateRefreshTokenAsync(Guid userId, string refreshToken, string newRefreshToken)
+        public async Task RotateRefreshTokenAsync(Guid userId, string refreshToken, string newRefreshToken)
         {
             if (string.IsNullOrWhiteSpace(refreshToken))
                 throw new ArgumentException("Refresh token is required.", nameof(refreshToken));
@@ -146,7 +146,7 @@ namespace CadnunsDev.MeusGastos.Backend.Domain.Services
             await refreshTokenRepository.CreateAsync(newTokenEntity);
         }
 
-        internal async Task SaveRefreshTokenAsync(Guid userId, string refreshToken)
+        public async Task SaveRefreshTokenAsync(Guid userId, string refreshToken)
         {
             var newTokenEntity = new RefreshToken
             {
@@ -161,7 +161,7 @@ namespace CadnunsDev.MeusGastos.Backend.Domain.Services
             await refreshTokenRepository.CreateAsync(newTokenEntity);
         }
 
-        internal async Task RevokeRefreshTokenAsync(string refreshToken)
+        public async Task RevokeRefreshTokenAsync(string refreshToken)
         {
             if (string.IsNullOrWhiteSpace(refreshToken))
                 return;

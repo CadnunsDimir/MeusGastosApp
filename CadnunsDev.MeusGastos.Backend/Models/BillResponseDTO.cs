@@ -11,7 +11,7 @@ namespace CadnunsDev.MeusGastos.Backend.Models
         public string? Category { get; private set; }
         public Guid BillId { get; private set; }
 
-        internal static BillResponseDTO Map(BillToPay bill) => new()
+        public static BillResponseDTO Map(BillToPay bill) => new()
         {
             BillId = bill.BillId,
             BillDescription = bill.BillDescription,
@@ -21,7 +21,7 @@ namespace CadnunsDev.MeusGastos.Backend.Models
             Category = bill.Category.Description,
         };
 
-        internal static List<BillResponseDTO> MapList(List<BillToPay> biils) =>
+        public static List<BillResponseDTO> MapList(List<BillToPay> biils) =>
             biils.Select(Map).ToList();
     }
 }

@@ -45,7 +45,7 @@ namespace CadnunsDev.MeusGastos.Backend.Domain.Services
             return user?.PasswordHash == typedPasswordHash ? user : null;
         }
 
-        internal async Task<LoginResponseDTO> RefreshToken(RefreshRequestDTO request)
+        public async Task<LoginResponseDTO> RefreshToken(RefreshRequestDTO request)
         {
             var refreshToken = request.RefreshToken;
             var user = await tokenService.ValidateRefreshTokenAsync(refreshToken);

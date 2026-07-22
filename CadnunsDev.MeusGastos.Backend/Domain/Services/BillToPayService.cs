@@ -2,7 +2,6 @@ using CadnunsDev.MeusGastos.Backend.Models;
 using CadnunsDev.MeusGastos.Backend.Domain.Repositories;
 using CadnunsDev.MeusGastos.Backend.Domain.Exceptions;
 using CadnunsDev.MeusGastos.Backend.Domain.Entities;
-using Microsoft.Extensions.Logging;
 
 namespace CadnunsDev.MeusGastos.Backend.Domain.Services
 {
@@ -32,7 +31,7 @@ namespace CadnunsDev.MeusGastos.Backend.Domain.Services
             this.movementRepository = movementRepository;
         }
 
-        internal async Task<BillResponseDTO> CreateNewAsync(string userName, int year, int month, NewBillDTO newBill)
+        public async Task<BillResponseDTO> CreateNewAsync(string userName, int year, int month, NewBillDTO newBill)
         {
             logger.LogInformation("CreateNewAsync start for user={UserName}, year={Year}, month={Month}, billDescription={BillDescription}, value={Value}, paymentDay={PaymentDay}, repeatNextMonth={RepeatValueNextMonth}, category={Category}",
                 userName, year, month, newBill.Description, newBill.Value, newBill.PaymentDay, newBill.RepeatValueNextMonth, newBill.Category);
@@ -96,7 +95,7 @@ namespace CadnunsDev.MeusGastos.Backend.Domain.Services
             return category;
         }
 
-        internal async Task<List<BillResponseDTO>> ListAsync(string userName, int year, int month)
+        public async Task<List<BillResponseDTO>> ListAsync(string userName, int year, int month)
         {
             logger.LogInformation("ListAsync start for user={UserName}, year={Year}, month={Month}", userName, year, month);
 
@@ -152,7 +151,7 @@ namespace CadnunsDev.MeusGastos.Backend.Domain.Services
             return result;
         }
         
-        internal async Task DeleteBillAsync(string userName, Guid billId)
+        public async Task DeleteBillAsync(string userName, Guid billId)
         {
             var userId = await GetUserId(userName);
             await billsRepository.DeleteAsync(userId, billId);
@@ -239,7 +238,7 @@ namespace CadnunsDev.MeusGastos.Backend.Domain.Services
             return response;
         }
 
-        internal async Task<List<CategoryDTO>> QueryCategories(string userName, string query)
+        public async Task<List<CategoryDTO>> QueryCategories(string userName, string query)
         {
             if (string.IsNullOrWhiteSpace(query) || query.Length < 3)
                 return [];
