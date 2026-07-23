@@ -19,10 +19,17 @@ namespace CadnunsDev.MeusGastos.Backend.Adapter
             UpdateShare(group);
             RemoveShare(group);
 
+            ListMyDashboards(group);
+
             return app;
         }
 
-        
+        private static void ListMyDashboards(RouteGroupBuilder group)
+        {
+            group.MapGet("/", (ClaimsPrincipal user, MyDashboardsService myDashboardsService)=>
+                myDashboardsService.ListAvailable(user.GetUserId()));
+        }
+
         private static void RemoveShare(RouteGroupBuilder group) => 
             group.MapDelete("/share/{shareId:guid}", async (ClaimsPrincipal user, ShareDashboardService shareDashboardService, Guid shareId) =>
                 {

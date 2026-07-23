@@ -21,7 +21,6 @@ namespace CadnunsDev.MeusGastos.Backend.Infrastructure.Repositories
 
         public async Task<bool> ExistsShareWithThisOwnerAndUserAsync(Guid ownerUserId, Guid sharedWithUserId)
         {
-            // EF.Property<Guid> permite filtrar diretamente pelas Shadow Properties configuradas no ModelBuilder
             return await _context.Set<ShareDashboard>()
                 .AnyAsync(s => s.DashboardOwner.UserId == ownerUserId && 
                    s.SharedWithUser.UserId == sharedWithUserId);
@@ -37,13 +36,15 @@ namespace CadnunsDev.MeusGastos.Backend.Infrastructure.Repositories
 
         public async Task<List<ShareDashboard>> ListAsync(Guid ownerUserId)
         {
-            return await _context.Set<ShareDashboard>()
-                .Include(s => s.DashboardOwner)
-                .Include(s => s.SharedWithUser)
+            return await DbWithInclude()
                 .Where(s => s.DashboardOwner.UserId == ownerUserId)
                 .AsNoTracking() // Melhora a performance em consultas de leitura pura
                 .ToListAsync();
         }
+
+        private IQueryable<ShareDashboard> DbWithInclude() => _context.Set<ShareDashboard>()
+                .Include(s => s.DashboardOwner)
+                .Include(s => s.SharedWithUser);
 
         public async Task RemoveAsync(object sharing)
         {
@@ -55,6 +56,14 @@ namespace CadnunsDev.MeusGastos.Backend.Infrastructure.Repositories
         {
             _context.Set<ShareDashboard>().Update(sharing);
             await _context.SaveChangesAsync();
+        }
+
+        public async Task<List<ShareDashboard>> ListSharedWithAsync(Guid userId)
+        {
+            return await DbWithInclude()
+                .Where(s => s.SharedWithUser.UserId == userId)
+                .AsNoTracking()
+                .ToListAsync();
         }
     }
 }
