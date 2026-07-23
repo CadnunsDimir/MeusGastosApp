@@ -30,28 +30,13 @@ builder.Services.AddSwaggerGen(c =>
 });
 
 builder.AddJwtAuthentication();
-builder.Services.AddGlobalErrorHandling();
-builder.Services.AddDbContext<AppDbContext>(options =>
-    options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection")));
 
-builder.Services.AddScoped<IUnitOfWork, EfUnitOfWork>();
-builder.Services.AddScoped<IUserRepository, UserRepository>();
-builder.Services.AddScoped<IRefreshTokenRepository, RefreshTokenRepository>();
-builder.Services.AddScoped<IBankAccountRepository, BankAccountRepository>();
-builder.Services.AddScoped<IBillCategoryRepository, BillCategoryRepository>();
-builder.Services.AddScoped<IBillToPayRepository, BillToPayRepository>();
-builder.Services.AddScoped<IBankAccountMovementRepository, BankAccountMovementRepository>();
-builder.Services.AddScoped<IShareDashboardRepository, ShareDashboardRepository>();
-
-builder.Services.AddScoped<NewUserService>();
-builder.Services.AddScoped<LoginService>();
-builder.Services.AddScoped<TokenService>();
-builder.Services.AddScoped<BankAccountService>();
-builder.Services.AddScoped<BillToPayService>();
-builder.Services.AddScoped<BankAccountMovementService>();
-builder.Services.AddScoped<DashboardService>();
-builder.Services.AddScoped<UserProfileService>();
-builder.Services.AddScoped<ShareDashboardService>();
+builder.Services
+    .AddGlobalErrorHandling()
+    .AddDbContext<AppDbContext>(options =>
+        options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection")))
+    .AddRepositories()
+    .AddServices();
 
 builder.Services.AddRateLimiter(options =>
 {
